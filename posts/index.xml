@@ -1,0 +1,84 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Samuel Rodrigues</title><link>https://obito.fr/posts/</link><description>Recent content in Posts on Samuel Rodrigues</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>&lt;a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0&lt;/a></copyright><lastBuildDate>Mon, 26 Dec 2022 19:05:00 +0100</lastBuildDate><atom:link href="https://obito.fr/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Use UUID in SQLite database with Rust + Diesel.rs</title><link>https://obito.fr/posts/2022/12/use-uuid-in-sqlite-database-with-rust-diesel.rs/</link><pubDate>Mon, 26 Dec 2022 19:05:00 +0100</pubDate><guid>https://obito.fr/posts/2022/12/use-uuid-in-sqlite-database-with-rust-diesel.rs/</guid><description>Recently in one of my project I ran into a problem where I wanted to use UUIDs in my database but as it turns out SQLite only support 5 data types : TEXT, INTEGER, REAL, NUMERIC and BLOB. This in itself is not really a concern, as I use an ORM (Object-relational mapping) called diesel.rs in my project.
+The issue that I encountered is in the ORM itself. The crate diesel.</description><content type="html"><![CDATA[<p>Recently in one of my project I ran into a problem where I wanted to use UUIDs in my database but as it turns out SQLite only support 5 data types : <code>TEXT</code>, <code>INTEGER</code>, <code>REAL</code>, <code>NUMERIC</code> and <code>BLOB</code>. This in itself is not really a concern, as I use an ORM (Object-relational mapping) called <a href="https://diesel.rs/">diesel.rs</a> in my project.</p>
+<p>The issue that I encountered is in the ORM itself. The crate diesel.rs as an optional feature, allowing the use of the type Uuid from the rust crate uuid. Issue is, this feature only works with PostgreSQL backends, and the only place where it&rsquo;s mentioned is deep in the documentation. So I spent a good amount of time trying to figure out why this feature wasn&rsquo;t working. Anyway, I still wanted to use UUIDs in my database without having to each time explicitly convert it to a type accepted by it.</p>
+<p>The solution ? Creating a proxy type to handle the magic for me :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">use</span> diesel::deserialize::{self, FromSql};
+<span style="color:#66d9ef">use</span> diesel::serialize::{self, Output, ToSql};
+<span style="color:#66d9ef">use</span> diesel::sql_types::Binary;
+<span style="color:#66d9ef">use</span> diesel::sqlite::Sqlite;
+<span style="color:#66d9ef">use</span> diesel::{AsExpression, FromSqlRow};
+<span style="color:#66d9ef">use</span> std::fmt;
+<span style="color:#66d9ef">use</span> std::fmt::{Display, Formatter};
+<span style="color:#66d9ef">use</span> uuid;
+
+<span style="color:#75715e">#[derive(Debug, Clone, Copy, FromSqlRow, AsExpression, Hash, Eq, PartialEq)]</span>
+<span style="color:#75715e">#[sql_type = </span><span style="color:#e6db74">&#34;Binary&#34;</span><span style="color:#75715e">]</span>
+<span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">UUID</span>(<span style="color:#66d9ef">pub</span> uuid::Uuid);
+
+<span style="color:#75715e">// Small function to easily initialize our uuid
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">impl</span> UUID {
+    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">random</span>() -&gt; <span style="color:#a6e22e">Self</span> {
+        Self(uuid::Uuid::new_v4())
+    }
+}
+
+<span style="color:#75715e">// Allow easy conversion from UUID to the wanted uuid::Uuid
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">impl</span> From<span style="color:#f92672">&lt;</span>UUID<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">for</span> uuid::Uuid {
+    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">from</span>(s: <span style="color:#a6e22e">UUID</span>) -&gt; <span style="color:#a6e22e">Self</span> {
+        s.<span style="color:#ae81ff">0</span>
+    }
+}
+
+<span style="color:#66d9ef">impl</span> Display <span style="color:#66d9ef">for</span> UUID {
+    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">fmt</span>(<span style="color:#f92672">&amp;</span>self, f: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">mut</span> Formatter<span style="color:#f92672">&lt;&#39;</span>_<span style="color:#f92672">&gt;</span>) -&gt; <span style="color:#a6e22e">fmt</span>::Result {
+        write!(f, <span style="color:#e6db74">&#34;{}&#34;</span>, self.<span style="color:#ae81ff">0</span>)
+    }
+}
+
+<span style="color:#75715e">// Convert binary data from SQLite to a UUID
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">impl</span> FromSql<span style="color:#f92672">&lt;</span>Binary, Sqlite<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">for</span> UUID {
+    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">from_sql</span>(bytes: <span style="color:#a6e22e">diesel</span>::backend::RawValue<span style="color:#f92672">&lt;&#39;</span>_, Sqlite<span style="color:#f92672">&gt;</span>) -&gt; <span style="color:#a6e22e">deserialize</span>::Result<span style="color:#f92672">&lt;</span>Self<span style="color:#f92672">&gt;</span> {
+        <span style="color:#66d9ef">let</span> bytes <span style="color:#f92672">=</span> <span style="color:#f92672">&lt;*</span><span style="color:#66d9ef">const</span> [<span style="color:#66d9ef">u8</span>] <span style="color:#66d9ef">as</span> FromSql<span style="color:#f92672">&lt;</span>Binary, Sqlite<span style="color:#f92672">&gt;&gt;</span>::from_sql(bytes)<span style="color:#f92672">?</span>;
+        <span style="color:#66d9ef">let</span> bytes <span style="color:#f92672">=</span> <span style="color:#66d9ef">unsafe</span> { <span style="color:#f92672">&amp;*</span>bytes };
+        <span style="color:#66d9ef">let</span> uuid <span style="color:#f92672">=</span> uuid::Uuid::from_slice(bytes).map_err(<span style="color:#f92672">|</span>_<span style="color:#f92672">|</span> <span style="color:#e6db74">&#34;Invalid UUID&#34;</span>)<span style="color:#f92672">?</span>;
+        Ok(UUID(uuid))
+    }
+}
+
+<span style="color:#75715e">// Convert UUID to binary data for SQLite
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">impl</span> ToSql<span style="color:#f92672">&lt;</span>Binary, Sqlite<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">for</span> UUID {
+    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">to_sql</span><span style="color:#f92672">&lt;&#39;</span><span style="color:#a6e22e">b</span><span style="color:#f92672">&gt;</span>(<span style="color:#f92672">&amp;&#39;</span><span style="color:#a6e22e">b</span> self, out: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">mut</span> Output<span style="color:#f92672">&lt;&#39;</span><span style="color:#a6e22e">b</span>, <span style="color:#f92672">&#39;</span>_, Sqlite<span style="color:#f92672">&gt;</span>) -&gt; <span style="color:#a6e22e">serialize</span>::Result {
+        Ok(<span style="color:#f92672">&lt;</span>[<span style="color:#66d9ef">u8</span>] <span style="color:#66d9ef">as</span> ToSql<span style="color:#f92672">&lt;</span>Binary, Sqlite<span style="color:#f92672">&gt;&gt;</span>::to_sql(
+            self.<span style="color:#ae81ff">0.</span>as_bytes(),
+            out,
+        )<span style="color:#f92672">?</span>)
+    }
+}
+</code></pre></div><p>With that, we just need to use the <code>BLOB</code> type to store UUID as raw binary data in SQLite :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> tags (
+    uuid BLOB <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span> <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    name TEXT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">UNIQUE</span>,
+
+    created_at DATETIME <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#66d9ef">CURRENT_TIMESTAMP</span>,
+    updated_at DATETIME <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#66d9ef">CURRENT_TIMESTAMP</span>
+);
+</code></pre></div><p>And finally, use our new <code>UUID</code> type in our rust code :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#75715e">#[derive(Queryable, Debug)]</span>
+<span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Tag</span> {
+    <span style="color:#66d9ef">pub</span> id: <span style="color:#a6e22e">UUID</span>,
+    <span style="color:#66d9ef">pub</span> name: String,
+    <span style="color:#66d9ef">pub</span> display_name: String,
+    <span style="color:#66d9ef">pub</span> created_at: <span style="color:#a6e22e">NaiveDateTime</span>,
+    <span style="color:#66d9ef">pub</span> updated_at: <span style="color:#a6e22e">NaiveDateTime</span>,
+}
+
+<span style="color:#75715e">#[derive(Insertable)]</span>
+<span style="color:#75715e">#[diesel(table_name = tags)]</span>
+<span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">NewTag</span><span style="color:#f92672">&lt;&#39;</span><span style="color:#a6e22e">a</span><span style="color:#f92672">&gt;</span> {
+    <span style="color:#66d9ef">pub</span> uuid: <span style="color:#66d9ef">&amp;</span><span style="color:#f92672">&#39;</span><span style="color:#a6e22e">a</span> <span style="color:#a6e22e">UUID</span>,
+    <span style="color:#66d9ef">pub</span> name: <span style="color:#66d9ef">&amp;</span><span style="color:#f92672">&#39;</span><span style="color:#a6e22e">a</span> <span style="color:#66d9ef">str</span>,
+    <span style="color:#66d9ef">pub</span> display_name: <span style="color:#66d9ef">&amp;</span><span style="color:#f92672">&#39;</span><span style="color:#a6e22e">a</span> <span style="color:#66d9ef">str</span>,
+    <span style="color:#66d9ef">pub</span> created_at: <span style="color:#66d9ef">&amp;</span><span style="color:#f92672">&#39;</span><span style="color:#a6e22e">a</span> <span style="color:#a6e22e">NaiveDateTime</span>,
+    <span style="color:#66d9ef">pub</span> updated_at: <span style="color:#66d9ef">&amp;</span><span style="color:#f92672">&#39;</span><span style="color:#a6e22e">a</span> <span style="color:#a6e22e">NaiveDateTime</span>,
+}
+</code></pre></div>]]></content></item></channel></rss>
