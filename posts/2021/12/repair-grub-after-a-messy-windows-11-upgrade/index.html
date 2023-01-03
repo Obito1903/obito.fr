@@ -1,0 +1,222 @@
+<!doctype html><html lang=en>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="ie=edge">
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=author content="Samuel Rodrigues ">
+<meta name=description content="So you have a dual boot with Windows 10 and you decided to upgrade to Windows 11 to enjoy all of its new WSL functionalities or try the WSA. Everything goes fine in the first time, you do everything necessary to please the Windows 11 system requirement checker, and you start the upgrade. Everything seems alright up until the moment you try to reboot your PC after Windows 11 finally finished its installation.">
+<meta name=keywords content=",windows,linux,grub">
+<meta name=robots content="noodp">
+<meta name=theme-color content>
+<link rel=canonical href=https://obito.fr/posts/2021/12/repair-grub-after-a-messy-windows-11-upgrade/>
+<title>
+Repair GRUB after a messy Windows 11 upgrade" :: Samuel Rodrigues — Portofolio, Thoughts, stories and ideas from my everyday life.
+</title>
+<link href=https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css rel=stylesheet type=text/css>
+<link rel=stylesheet href=https://obito.fr/main.c6e2daf91c38b38fd2a653a48fa2f27da4c5e5ecf3aa919d248c3eb63dd8a3ed.css>
+<link rel=apple-touch-icon sizes=180x180 href=https://obito.fr/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=https://obito.fr/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=https://obito.fr/favicon-16x16.png>
+<link rel=manifest href=https://obito.fr/site.webmanifest>
+<link rel=mask-icon href=https://obito.fr/safari-pinned-tab.svg color>
+<link rel="shortcut icon" href=https://obito.fr/favicon.ico>
+<meta name=msapplication-TileColor content>
+<meta itemprop=name content="Repair GRUB after a messy Windows 11 upgrade&#34;">
+<meta itemprop=description content="So you have a dual boot with Windows 10 and you decided to upgrade to Windows 11 to enjoy all of its new WSL functionalities or try the WSA. Everything goes fine in the first time, you do everything necessary to please the Windows 11 system requirement checker, and you start the upgrade. Everything seems alright up until the moment you try to reboot your PC after Windows 11 finally finished its installation."><meta itemprop=datePublished content="2021-12-24T20:16:45+01:00">
+<meta itemprop=dateModified content="2021-12-24T20:16:45+01:00">
+<meta itemprop=wordCount content="1122"><meta itemprop=image content="https://obito.fr/">
+<meta itemprop=keywords content="windows,linux,grub,">
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://obito.fr/">
+<meta name=twitter:title content="Repair GRUB after a messy Windows 11 upgrade&#34;">
+<meta name=twitter:description content="So you have a dual boot with Windows 10 and you decided to upgrade to Windows 11 to enjoy all of its new WSL functionalities or try the WSA. Everything goes fine in the first time, you do everything necessary to please the Windows 11 system requirement checker, and you start the upgrade. Everything seems alright up until the moment you try to reboot your PC after Windows 11 finally finished its installation.">
+<meta property="og:title" content="Repair GRUB after a messy Windows 11 upgrade&#34;">
+<meta property="og:description" content="So you have a dual boot with Windows 10 and you decided to upgrade to Windows 11 to enjoy all of its new WSL functionalities or try the WSA. Everything goes fine in the first time, you do everything necessary to please the Windows 11 system requirement checker, and you start the upgrade. Everything seems alright up until the moment you try to reboot your PC after Windows 11 finally finished its installation.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://obito.fr/posts/2021/12/repair-grub-after-a-messy-windows-11-upgrade/"><meta property="og:image" content="https://obito.fr/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2021-12-24T20:16:45+01:00">
+<meta property="article:modified_time" content="2021-12-24T20:16:45+01:00"><meta property="og:site_name" content="Samuel Rodrigues">
+<meta property="article:published_time" content="2021-12-24 20:16:45 +0100 +0100">
+</head>
+<body>
+<div class=container>
+<header class=header>
+<span class=header__inner>
+<a href=https://obito.fr/ style=text-decoration:none>
+<div class=logo>
+<span class=logo__mark>></span>
+<span class=logo__text>Obito1903</span>
+<span class=logo__cursor>
+</span>
+</div>
+</a>
+<span class=header__right>
+<nav class=menu>
+<ul class=menu__inner><li><a href=https://obito.fr/posts>Blog</a></li>
+<div class=submenu>
+<li class=dropdown>
+<a href=javascript:void(0) class=dropbtn>en</a>
+<div class=dropdown-content>
+</div>
+</li>
+</div>
+</ul>
+</nav>
+<span class=menu-trigger><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+</span>
+</span>
+</span>
+</header>
+<div class=content>
+<main class=post>
+<div class=post-info>
+<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+6 minutes
+</p>
+</div>
+<article>
+<h1 class=post-title>
+<a href=https://obito.fr/posts/2021/12/repair-grub-after-a-messy-windows-11-upgrade/>Repair GRUB after a messy Windows 11 upgrade"</a>
+</h1>
+<hr>
+<aside id=toc>
+<div class=toc-title>Table of Contents</div>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#find-the-boot-partition>Find the boot partition</a></li>
+<li><a href=#booting-into-linux>Booting into Linux</a></li>
+<li><a href=#reinstall-grub>Reinstall GRUB</a></li>
+</ul>
+</nav>
+</aside>
+<hr>
+<div class=post-content>
+<p>So you have a dual boot with Windows 10 and you decided to upgrade to Windows 11 to enjoy all of its new <a href=https://docs.microsoft.com/en-us/windows/wsl/install>WSL</a> functionalities or try the <a href=https://docs.microsoft.com/en-us/windows/android/wsa/>WSA</a>. Everything goes fine in the first time, you do everything necessary to please the Windows 11 system requirement checker, and you start the upgrade. Everything seems alright up until the moment you try to reboot your PC after Windows 11 finally finished its installation. But surprise !! You end up in GRUB Rescue de the GRUB recovery mode that start in case it is not able to mount your boot partition to then boot your system.</p>
+<p>In all their wisdom Microsoft decided that if you went to the effort of going from Windows 10 to Windows 11 on a dual boot system, it&rsquo;s surely because you think Windows 11 is the superior OS and you want to ditch Linux, and then proceed to confuse your GRUB in that attempt.</p>
+<p>I&rsquo;m not really sure what exactly happened, but I&rsquo;m pretty sure Windows 11 messed with my partition table and grub was then not able to find it back. So to solve the issue, we are gonna first boot back to Linux and then reinstall GRUB.</p>
+<h2 id=find-the-boot-partition>Find the boot partition</h2>
+<p>When your computer boot in GRUB in those condition, you should be granted with a prompt looking like this</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>Error: unkown filesystem.
+grub rescue&gt;
+</code></pre></div><p>(It happened last night at the time of writing this, so I&rsquo;m not entirely confident at what was exactly displayed, but you should have something really similar.)</p>
+<p>First thing you&rsquo;re going to want to do is print the list of available drives and partitions with the ls command. You should get an output like this:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>grub rescue&gt; ls
+<span style=color:#f92672>(</span>hd0<span style=color:#f92672>)</span> <span style=color:#f92672>(</span>hd0,gpt5<span style=color:#f92672>)</span> <span style=color:#f92672>(</span>hd0,gpt4<span style=color:#f92672>)</span> <span style=color:#f92672>(</span>hd0,gpt3<span style=color:#f92672>)</span> <span style=color:#f92672>(</span>hd0,gpt2<span style=color:#f92672>)</span> <span style=color:#f92672>(</span>hd0,gpt1<span style=color:#f92672>)</span>
+</code></pre></div><p><code>(hdX)</code> represent a physical drive, while <code>(hdX,gptY)</code> or <code>(hdX,Y)</code> represent a partition. In our case, we then have 1 physical drive and 5 <a href=https://en.wikipedia.org/wiki/GUID_Partition_Table>GPT</a> partitions.</p>
+<p>Now we would like to know where our boot partition is so, first we will check each partition to find if there is a boot folder at the root. It&rsquo;s a bit tedious, but well, we&rsquo;ve got to do what we&rsquo;ve got to do.</p>
+<p>So again, use the ls command on each partition to find that folder.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>grub rescue&gt; ls <span style=color:#f92672>(</span>hd0,gpt5<span style=color:#f92672>)</span>/
+<span style=color:#f92672>(</span>hd0,gpt5<span style=color:#f92672>)</span> unknown filesystem
+grub rescue&gt; ls <span style=color:#f92672>(</span>hd0,gpt4<span style=color:#f92672>)</span>/
+<span style=color:#f92672>(</span>hd0,gpt5<span style=color:#f92672>)</span> unknown filesystem
+grub rescue&gt; ls <span style=color:#f92672>(</span>hd0,gpt3<span style=color:#f92672>)</span>/
+bin boot dev etc home lib lib64
+</code></pre></div><p>Don&rsquo;t worry about the <code>unknown filesystem</code> errors, it only means it was not a Linux partition, so we can just ignore them.</p>
+<p>Once you found a partition with a boot folder make sure it&rsquo;s the right partition, sometime some Dist like Ubuntu install the Linux kernel image on a separate partition and other store it on the same partition as your root usually. If your boot partition is separate, you should not have much on the partitions 4-5 folders (not a full Linux OS).</p>
+<p>Next, you&rsquo;ll want to check in that boot folder if there is a folder called <strong>Grub</strong> :</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>grub rescue&gt; ls <span style=color:#f92672>(</span>hd0,gpt3<span style=color:#f92672>)</span>/boot
+grub initramfs-linux-fallback.img initramfs-linux.img intel-ucode.img vmlinuz-linux
+</code></pre></div><p>If you do not find the grub folder, either you are on the wrong partition, in which case you&rsquo;ll just need to continue looking on other partitions for the boot folder. Or Windows 11 just nuked your install, and you&rsquo;ll probably need to use a tool like <a href=https://sourceforge.net/p/boot-repair/home/fr/>boot-repair</a>.</p>
+<p>Let&rsquo;s just check if everything is in order in the grub folder, and then we&rsquo;ll move on to the next step :</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>grub rescue&gt; ls <span style=color:#f92672>(</span>hd0,gpt3<span style=color:#f92672>)</span>/boot/grub
+fonts  grub.cfg  grubenv  locale  themes  unicode.pf2  x86_64-efi
+</code></pre></div><p>There you should at least have a folder with the name of your system architecture type, in my case it&rsquo;s <code>x86_64-efi</code>.</p>
+<h2 id=booting-into-linux>Booting into Linux</h2>
+<p>Now that we know where our original GRUB configuration is located, we need to boot into Linux with it.</p>
+<p>First we need to tell grub in which partition is located the files it needs to boot a system, to do that we will use the command set that is used to define an environment variable for GRUB.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>grub rescue&gt; set root<span style=color:#f92672>=(</span>hd0,gpt3<span style=color:#f92672>)</span>
+</code></pre></div><p>Then we need to tell GRUB where to find the modules necessary, load its original configuration again with the comment set.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>grub rescue&gt; set prefix<span style=color:#f92672>=(</span>hd0,gpt3<span style=color:#f92672>)</span>/boot/grub
+</code></pre></div><p>Just replace <code>(hd0,gpt3)/boot/grub</code> with the path to your grub folder.</p>
+<p>Then to launch GRUB in its original configuration :</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>grub rescue&gt; insmod normal
+grub rescue&gt; normal
+</code></pre></div><p>From there, GRUB should be back the way it looked before. <strong>But wait it&rsquo;s not finished !!</strong> If you stop there on your next boot, you will be back on step one.</p>
+<h2 id=reinstall-grub>Reinstall GRUB</h2>
+<p>For the final step, you&rsquo;ll need to boot into Linux and open a terminal. Next, you will need to mount your <code>efi</code> partition if you are on an efi system (which is probably the case if you upgraded to Windows 11). To do that, you first need to find the <code>efi</code> partition on your system:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>&gt; fdisk -l
+Disk /dev/nvme0n1: 476.94 GiB, <span style=color:#ae81ff>512110190592</span> bytes, <span style=color:#ae81ff>1000215216</span> sectors
+Disk model: BC711 NVMe SK hynix 512GB
+Units: sectors of <span style=color:#ae81ff>1</span> * 512 <span style=color:#f92672>=</span> <span style=color:#ae81ff>512</span> bytes
+Sector size <span style=color:#f92672>(</span>logical/physical<span style=color:#f92672>)</span>: <span style=color:#ae81ff>512</span> bytes / <span style=color:#ae81ff>512</span> bytes
+I/O size <span style=color:#f92672>(</span>minimum/optimal<span style=color:#f92672>)</span>: <span style=color:#ae81ff>512</span> bytes / <span style=color:#ae81ff>512</span> bytes
+Disklabel type: gpt
+Disk identifier: 0DC7E01E-9E0B-4C27-A86B-8F87A2043B1F
+
+Device               Start        End   Sectors   Size Type
+/dev/nvme0n1p1        <span style=color:#ae81ff>2048</span>    <span style=color:#ae81ff>1050623</span>   <span style=color:#ae81ff>1048576</span>   512M EFI System
+/dev/nvme0n1p2     <span style=color:#ae81ff>1050624</span>    <span style=color:#ae81ff>5244927</span>   <span style=color:#ae81ff>4194304</span>     2G Linux filesystem
+/dev/nvme0n1p3     <span style=color:#ae81ff>5244928</span>   <span style=color:#ae81ff>47187967</span>  <span style=color:#ae81ff>41943040</span>    20G Linux filesystem
+/dev/nvme0n1p4    <span style=color:#ae81ff>47187968</span>  <span style=color:#ae81ff>297259007</span> <span style=color:#ae81ff>250071040</span> 119.2G Microsoft basic data
+/dev/nvme0n1p5   <span style=color:#ae81ff>297259008</span>  <span style=color:#ae81ff>298844159</span>   <span style=color:#ae81ff>1585152</span>   774M Windows recovery environment
+/dev/nvme0n1p6   <span style=color:#ae81ff>298846208</span>  <span style=color:#ae81ff>403703807</span> <span style=color:#ae81ff>104857600</span>    50G Linux filesystem
+/dev/nvme0n1p7   <span style=color:#ae81ff>403703808</span>  <span style=color:#ae81ff>420481023</span>  <span style=color:#ae81ff>16777216</span>     8G Linux swap
+/dev/nvme0n1p8   <span style=color:#ae81ff>420481024</span>  <span style=color:#ae81ff>588251135</span> <span style=color:#ae81ff>167770112</span>    80G Linux filesystem
+/dev/nvme0n1p9   <span style=color:#ae81ff>588251136</span> <span style=color:#ae81ff>1000148991</span> <span style=color:#ae81ff>411897856</span> 196.4G Linux filesystem
+/dev/nvme0n1p10 <span style=color:#ae81ff>1000148992</span> <span style=color:#ae81ff>1000181759</span>     <span style=color:#ae81ff>32768</span>    16M Microsoft reserved
+/dev/nvme0n1p11 <span style=color:#ae81ff>1000181760</span> <span style=color:#ae81ff>1000214527</span>     <span style=color:#ae81ff>32768</span>    16M BIOS boot
+</code></pre></div><p>In the list of devices, there should be a partition marked <code>EFI System</code>. That&rsquo;s the one, note down the location of the device. We will now mount the partition, in my case it will be to /<code>boot/efi</code> :</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>root&gt; mkdir /boot/efi
+root&gt; mount /dev/nvme0n1p1 /boot/efi
+</code></pre></div><p>Now that everything is in place, we can proceed to reinstalling GRUB.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>&gt; grub-install --target<span style=color:#f92672>=</span>x86_64-efi --efi-directory<span style=color:#f92672>=</span>/boot/efi --boot-directory<span style=color:#f92672>=</span>/boot
+</code></pre></div><p>You will probably need to change a few things in this command :</p>
+<ul>
+<li><code>--target</code> : your system Architecture Type in my case x86_64-efi,</li>
+<li><code>--efi-directory</code> : tell grub where to install the bootloader which is the partition we just mounted, and finally</li>
+<li><code>--boot-directory</code> : where your GRUB config is located so /boot.</li>
+</ul>
+<p>And for the grand final :</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>root&gt; grub-mkconfig -o /boot/grub/grub.cfg
+</code></pre></div><p>If everything went fine, you should now have your GRUB functioning properly again. Assuming of course you had a problem and installation similar mine.</p>
+<p>If you need any more assistance, I advise you to continue to look on the internet on websites like <a href=https://unix.stackexchange.com/>unix.stackexchange.com</a> or the like.</p>
+</div>
+</article>
+<hr>
+<div class=post-info>
+<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83.0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7" y2="7"/></svg>
+<span class=tag><a href=https://obito.fr/tags/windows/>windows</a></span>
+<span class=tag><a href=https://obito.fr/tags/linux/>linux</a></span>
+<span class=tag><a href=https://obito.fr/tags/grub/>grub</a></span>
+</p>
+<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6A2 2 0 004 4v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+1122 Words
+</p>
+<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+2021-12-24 19:16
+</p>
+</div>
+<div class=pagination>
+<div class=pagination__title>
+<span class=pagination__title-h>Read other posts</span>
+<hr>
+</div>
+<div class=pagination__buttons>
+<span class="button previous">
+<a href=https://obito.fr/posts/2022/01/control-your-hi-fi-setup-with-home-assistant-and-an-ir-esp01/>
+<span class=button__icon>←</span>
+<span class=button__text>Control your HI-FI setup with Home-assistant and an IR-ESP01</span>
+</a>
+</span>
+</div>
+</div>
+</main>
+</div>
+<footer class=footer>
+<div class=footer__inner>
+<div class=footer__content>
+<span><a href=https://obito.fr/>Samuel Rodrigues</a></span>
+<span><a href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank rel=noopener>CC BY-NC 4.0</a></span>
+<span><a href=https://obito.fr/posts/index.xml target=_blank title=rss><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 019 9"/><path d="M4 4a16 16 0 0116 16"/><circle cx="5" cy="19" r="1"/></svg></a></span>
+</div>
+</div>
+<div class=footer__inner>
+<div class=footer__content>
+<span>Powered by <a href=http://gohugo.io>Hugo</a></span><span>Made with &#10084; by <a href=https://github.com/obito1903>Obito1903</a></span>
+</div>
+</div>
+</footer>
+</div>
+<script type=text/javascript src=https://obito.fr/bundle.min.617ca242d692c44a5b9d7d50bb64ecba7c8e8b8e27c8d46ada65aa90950dfd263fdf84787e4c894121633d2ca72c37cddc1defd82020753f6dfa812387c1139d.js integrity="sha512-YXyiQtaSxEpbnX1Qu2TsunyOi44nyNRq2mWqkJUN/SY/34R4fkyJQSFjPSynLDfN3B3v2CAgdT9t+oEjh8ETnQ=="></script>
+</body>
+</html>

@@ -81,4 +81,195 @@ The issue that I encountered is in the ORM itself. The crate diesel.</descriptio
     <span style="color:#66d9ef">pub</span> created_at: <span style="color:#66d9ef">&amp;</span><span style="color:#f92672">&#39;</span><span style="color:#a6e22e">a</span> <span style="color:#a6e22e">NaiveDateTime</span>,
     <span style="color:#66d9ef">pub</span> updated_at: <span style="color:#66d9ef">&amp;</span><span style="color:#f92672">&#39;</span><span style="color:#a6e22e">a</span> <span style="color:#a6e22e">NaiveDateTime</span>,
 }
-</code></pre></div>]]></content></item></channel></rss>
+</code></pre></div>]]></content></item><item><title>Control your HI-FI setup with Home-assistant and an IR-ESP01</title><link>https://obito.fr/posts/2022/01/control-your-hi-fi-setup-with-home-assistant-and-an-ir-esp01/</link><pubDate>Tue, 25 Jan 2022 17:13:00 +0100</pubDate><guid>https://obito.fr/posts/2022/01/control-your-hi-fi-setup-with-home-assistant-and-an-ir-esp01/</guid><description>I recently bought a new integrated amplifier for my hi-fi setup to replace my old malfunctioning one. I mainly chose this one because I had a good deal on it, but it also came with a IR-remote to control it (not that impressive I know). And so naturally I wanted to automate it and add it with my IoT network which is controlled by Home-Assistant, an open-source home automation tool.</description><content type="html"><![CDATA[
+    <img src="hass-player.png"  alt="Home-assistant media-player"  class="center"  style="border-radius: 8px;"  />
+
+
+<p>I recently bought a new integrated amplifier for my hi-fi setup to replace my old malfunctioning one. I mainly chose this one because I had a good deal on it, but it also came with a IR-remote to control it (not that impressive I know). And so naturally I wanted to automate it and add it with my IoT network which is controlled by <a href="https://www.home-assistant.io/">Home-Assistant</a>, an open-source home automation tool.</p>
+<p>For this project I&rsquo;ll be using a ESP01 board with the <a href="https://esphome.io/">ESPHome</a> framework</p>
+<h2 id="getting-your-remote-ir-codes">Getting your remote IR-codes</h2>
+<p>Before beginning, you&rsquo;ll first need to get your hands on the remote IR-codes, to then be able to clone them with the ESP01. You have multiple option for that :</p>
+<ul>
+<li>Find your remote or one compatible with your device on sites that list remote IR-codes like Remote Central</li>
+<li>Record them yourself with the help of a IR-receiver module (ex : VS1838B) connected to your ESP.</li>
+</ul>
+<p>Personally, since I did not have a receiver on hand, I went with Remote Central. On the website, you&rsquo;ll be presented with a list of the different functions for the remote you choose and their associated Pronto code. The format of the code might be different depending on the website where you found it, but in most cases, you&rsquo;ll be able to use them. To see if your protocol is compatible with ESPHome, check <a href="https://esphome.io/components/remote_transmitter.html">here</a></p>
+<h2 id="setting-up-esphome">Setting up ESPHome</h2>
+<p>ESPHome is a tool to easily connect, and configure devices like Arduino, and esp to Home Assistant. In this guide, we will use the CLI version of this tool in a docker container.</p>
+<p>Go to a folder where you want to put the configuration for esp then initialize the ESPHome project :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker run --rm -v <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>PWD<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>:/config -it esphome/esphome wizard ir_remote.yaml
+</code></pre></div><p>This command will ask you to enter some information on the device you want to flash, name of the device, platform, board name, information about the network to which you want it to connect to, and finally the password of the ESPHome API that will be hosted on the board. At the end of the process, a YAML file will be generated with the name you specified earlier. It should look something like that :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">esphome</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">ir_remote</span>
+
+<span style="color:#f92672">esp8266</span>:
+  <span style="color:#f92672">board</span>: <span style="color:#ae81ff">esp01</span>
+
+<span style="color:#75715e"># Enable logging</span>
+<span style="color:#f92672">logger</span>:
+
+<span style="color:#75715e"># Enable Home Assistant API</span>
+<span style="color:#f92672">api</span>:
+  <span style="color:#f92672">password</span>: <span style="color:#e6db74">&#34;azertyuiop&#34;</span>
+
+<span style="color:#f92672">ota</span>:
+  <span style="color:#f92672">password</span>: <span style="color:#e6db74">&#34;azertyuiop&#34;</span>
+
+<span style="color:#f92672">wifi</span>:
+  <span style="color:#f92672">ssid</span>: <span style="color:#e6db74">&#34;hello&#34;</span>
+  <span style="color:#f92672">password</span>: <span style="color:#e6db74">&#34;azertyuiop&#34;</span>
+
+  <span style="color:#75715e"># Enable fallback hotspot (captive portal) in case wifi connection fails</span>
+  <span style="color:#f92672">ap</span>:
+    <span style="color:#f92672">ssid</span>: <span style="color:#e6db74">&#34;IR-Remote Fallback Hotspot&#34;</span>
+    <span style="color:#f92672">password</span>: <span style="color:#e6db74">&#34;superstrongpassword&#34;</span>
+
+<span style="color:#f92672">captive_portal</span>:
+</code></pre></div><p>Next, we will need to tell ESPhome to create an IR transceiver. To do that, first, we&rsquo;ll need to define a remote_transmitter in our configuration file :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">remote_transmitter</span>:
+  <span style="color:#f92672">pin</span>: <span style="color:#ae81ff">GPIO2</span>
+  <span style="color:#f92672">carrier_duty_percent</span>: <span style="color:#ae81ff">50</span><span style="color:#ae81ff">%</span>
+</code></pre></div><p>Just change the pin entry to the pin to which you&rsquo;re IR-led will be connected.</p>
+<p>Next, we&rsquo;ll have to add a <strong>button</strong> entity for each button that you want to emulate. Just add the button section to the YAML, and add a template platform for each of your buttons :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">button</span>:
+  - <span style="color:#f92672">platform</span>: <span style="color:#ae81ff">template</span>
+    <span style="color:#f92672">id</span>: <span style="color:#ae81ff">amp_power_btn</span>
+    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Amp Power Button</span>
+    <span style="color:#f92672">on_press</span>:
+  - <span style="color:#f92672">platform</span>: <span style="color:#ae81ff">template</span>
+    <span style="color:#f92672">id</span>: <span style="color:#ae81ff">amp_vol_plus</span>
+    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Amp Vol+</span>
+    <span style="color:#f92672">on_press</span>:
+</code></pre></div><p>Then for each of the buttons, we need to specify a corresponding code to send when it is activated. For that, we need to add an action for each button under the <strong>on_press</strong> section. You can find a list of possible action <a href="https://esphome.io/components/remote_transmitter.html#remote-transmitter-actions">here</a>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">platform</span>: <span style="color:#ae81ff">template</span>
+    <span style="color:#f92672">id</span>: <span style="color:#ae81ff">amp_power_btn</span>
+    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Amp Power Button</span>
+    <span style="color:#f92672">on_press</span>:
+      - <span style="color:#f92672">remote_transmitter.transmit_pronto</span>:
+          <span style="color:#f92672">data</span>: <span style="color:#e6db74">&#34;Some pronto hex code&#34;</span>
+</code></pre></div><p>In some cases, the device you want to automate will need the code to be repeated multiple times for it to be registered. To do that you can just add a <strong>repeat</strong> section under our action. In my case, my amp requires the code to be sent 2 times :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">remote_transmitter.transmit_pronto</span>:
+    <span style="color:#f92672">data</span>: <span style="color:#e6db74">&#34;Some pronto hex code&#34;</span>
+    <span style="color:#f92672">repeat</span>:
+        <span style="color:#f92672">times</span>: <span style="color:#ae81ff">2</span>
+</code></pre></div><p>Once you&rsquo;re done adding all your buttons we can move on to uploading the config to your ESP. To do that just plug your device in your computer and start the compilation and upload process with ESPhome :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker run --rm -v <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>PWD<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>:/config --device<span style="color:#f92672">=</span>/dev/ttyUSB0 -it esphome/esphome run ir_remote.yaml
+</code></pre></div><p>Where <code>/dev/ttyUSB0</code> is the usb port to which your ESP is connected.</p>
+<h2 id="wiring-up-the-ir-transceiver">Wiring up the IR-transceiver</h2>
+<p>Next step is to build our circuit to drive the led with the ESP.</p>
+<p>You will need :</p>
+<ul>
+<li>A 3.3v power supply</li>
+<li>1x infrared LED</li>
+<li>1x 1k Ohm resistor</li>
+<li>1x PNP Transistor (P2N2222A in my case)</li>
+</ul>
+<p><strong>Circuit diagram :</strong></p>
+
+    <img src="circuit-diagram.png"  alt="Circuit diagram"  class="center"  style="border-radius: 8px;"  />
+
+
+<p><!-- raw HTML omitted --><!-- raw HTML omitted --></p>
+
+    <img src="circuit-drawing.png"  alt="Circuit drawing"  class="center"  style="border-radius: 8px;"  />
+
+
+<p>Once everything is wired up you can power everything. To check if everything is working correctly you can go back to your pc and launch the ESPhome dashboard :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker run --rm --net<span style="color:#f92672">=</span>host -v <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>PWD<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>:/config -it esphome/esphome
+</code></pre></div>
+    <img src="esp-home-dashboard.png"  alt="Circuit drawing"  class="center"  style="border-radius: 8px;"  />
+
+
+<p>If everything is fine you should see your device appear online within a minute or two.</p>
+<h2 id="adding-esphome-to-home-assistant">Adding ESPhome to Home-assistant</h2>
+<p>Finally to add your remote to Home-assistant you have to option :</p>
+<ul>
+<li>Wait for Home-assistant to find your ESPhome device.</li>
+<li>Add it manually if you know its IP address.</li>
+</ul>
+<p>If you choose to add it manually, it&rsquo;s pretty simple just go to the Integrations menu in your Hass settings and add the ESPhome integration. It will prompt you to enter the IP of the ESP. Once done it will check if it can reach it and if so you are done.</p>
+<p>One final note on the button entity, If you want to create a button in your Lovelace dashboard to control your remote we will tell the UI button to call the <strong>Button</strong> service on press and select the button entity to activate.</p>
+
+    <img src="hass-entity.png"  alt="Circuit drawing"  class="center"  style="border-radius: 8px;"  />
+
+
+]]></content></item><item><title>Repair GRUB after a messy Windows 11 upgrade"</title><link>https://obito.fr/posts/2021/12/repair-grub-after-a-messy-windows-11-upgrade/</link><pubDate>Fri, 24 Dec 2021 20:16:45 +0100</pubDate><guid>https://obito.fr/posts/2021/12/repair-grub-after-a-messy-windows-11-upgrade/</guid><description>So you have a dual boot with Windows 10 and you decided to upgrade to Windows 11 to enjoy all of its new WSL functionalities or try the WSA. Everything goes fine in the first time, you do everything necessary to please the Windows 11 system requirement checker, and you start the upgrade. Everything seems alright up until the moment you try to reboot your PC after Windows 11 finally finished its installation.</description><content type="html"><![CDATA[<p>So you have a dual boot with Windows 10 and you decided to upgrade to Windows 11 to enjoy all of its new <a href="https://docs.microsoft.com/en-us/windows/wsl/install">WSL</a> functionalities or try the <a href="https://docs.microsoft.com/en-us/windows/android/wsa/">WSA</a>. Everything goes fine in the first time, you do everything necessary to please the Windows 11 system requirement checker, and you start the upgrade. Everything seems alright up until the moment you try to reboot your PC after Windows 11 finally finished its installation. But surprise !! You end up in GRUB Rescue de the GRUB recovery mode that start in case it is not able to mount your boot partition to then boot your system.</p>
+<p>In all their wisdom Microsoft decided that if you went to the effort of going from Windows 10 to Windows 11 on a dual boot system, it&rsquo;s surely because you think Windows 11 is the superior OS and you want to ditch Linux, and then proceed to confuse your GRUB in that attempt.</p>
+<p>I&rsquo;m not really sure what exactly happened, but I&rsquo;m pretty sure Windows 11 messed with my partition table and grub was then not able to find it back. So to solve the issue, we are gonna first boot back to Linux and then reinstall GRUB.</p>
+<h2 id="find-the-boot-partition">Find the boot partition</h2>
+<p>When your computer boot in GRUB in those condition, you should be granted with a prompt looking like this</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">Error: unkown filesystem.
+grub rescue&gt;
+</code></pre></div><p>(It happened last night at the time of writing this, so I&rsquo;m not entirely confident at what was exactly displayed, but you should have something really similar.)</p>
+<p>First thing you&rsquo;re going to want to do is print the list of available drives and partitions with the ls command. You should get an output like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">grub rescue&gt; ls
+<span style="color:#f92672">(</span>hd0<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>hd0,gpt5<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>hd0,gpt4<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>hd0,gpt3<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>hd0,gpt2<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>hd0,gpt1<span style="color:#f92672">)</span>
+</code></pre></div><p><code>(hdX)</code> represent a physical drive, while <code>(hdX,gptY)</code> or <code>(hdX,Y)</code> represent a partition. In our case, we then have 1 physical drive and 5 <a href="https://en.wikipedia.org/wiki/GUID_Partition_Table">GPT</a> partitions.</p>
+<p>Now we would like to know where our boot partition is so, first we will check each partition to find if there is a boot folder at the root. It&rsquo;s a bit tedious, but well, we&rsquo;ve got to do what we&rsquo;ve got to do.</p>
+<p>So again, use the ls command on each partition to find that folder.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">grub rescue&gt; ls <span style="color:#f92672">(</span>hd0,gpt5<span style="color:#f92672">)</span>/
+<span style="color:#f92672">(</span>hd0,gpt5<span style="color:#f92672">)</span> unknown filesystem
+grub rescue&gt; ls <span style="color:#f92672">(</span>hd0,gpt4<span style="color:#f92672">)</span>/
+<span style="color:#f92672">(</span>hd0,gpt5<span style="color:#f92672">)</span> unknown filesystem
+grub rescue&gt; ls <span style="color:#f92672">(</span>hd0,gpt3<span style="color:#f92672">)</span>/
+bin boot dev etc home lib lib64
+</code></pre></div><p>Don&rsquo;t worry about the <code>unknown filesystem</code> errors, it only means it was not a Linux partition, so we can just ignore them.</p>
+<p>Once you found a partition with a boot folder make sure it&rsquo;s the right partition, sometime some Dist like Ubuntu install the Linux kernel image on a separate partition and other store it on the same partition as your root usually. If your boot partition is separate, you should not have much on the partitions 4-5 folders (not a full Linux OS).</p>
+<p>Next, you&rsquo;ll want to check in that boot folder if there is a folder called <strong>Grub</strong> :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">grub rescue&gt; ls <span style="color:#f92672">(</span>hd0,gpt3<span style="color:#f92672">)</span>/boot
+grub initramfs-linux-fallback.img initramfs-linux.img intel-ucode.img vmlinuz-linux
+</code></pre></div><p>If you do not find the grub folder, either you are on the wrong partition, in which case you&rsquo;ll just need to continue looking on other partitions for the boot folder. Or Windows 11 just nuked your install, and you&rsquo;ll probably need to use a tool like <a href="https://sourceforge.net/p/boot-repair/home/fr/">boot-repair</a>.</p>
+<p>Let&rsquo;s just check if everything is in order in the grub folder, and then we&rsquo;ll move on to the next step :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">grub rescue&gt; ls <span style="color:#f92672">(</span>hd0,gpt3<span style="color:#f92672">)</span>/boot/grub
+fonts  grub.cfg  grubenv  locale  themes  unicode.pf2  x86_64-efi
+</code></pre></div><p>There you should at least have a folder with the name of your system architecture type, in my case it&rsquo;s <code>x86_64-efi</code>.</p>
+<h2 id="booting-into-linux">Booting into Linux</h2>
+<p>Now that we know where our original GRUB configuration is located, we need to boot into Linux with it.</p>
+<p>First we need to tell grub in which partition is located the files it needs to boot a system, to do that we will use the command set that is used to define an environment variable for GRUB.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">grub rescue&gt; set root<span style="color:#f92672">=(</span>hd0,gpt3<span style="color:#f92672">)</span>
+</code></pre></div><p>Then we need to tell GRUB where to find the modules necessary, load its original configuration again with the comment set.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">grub rescue&gt; set prefix<span style="color:#f92672">=(</span>hd0,gpt3<span style="color:#f92672">)</span>/boot/grub
+</code></pre></div><p>Just replace <code>(hd0,gpt3)/boot/grub</code> with the path to your grub folder.</p>
+<p>Then to launch GRUB in its original configuration :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">grub rescue&gt; insmod normal
+grub rescue&gt; normal
+</code></pre></div><p>From there, GRUB should be back the way it looked before. <strong>But wait it&rsquo;s not finished !!</strong> If you stop there on your next boot, you will be back on step one.</p>
+<h2 id="reinstall-grub">Reinstall GRUB</h2>
+<p>For the final step, you&rsquo;ll need to boot into Linux and open a terminal. Next, you will need to mount your <code>efi</code> partition if you are on an efi system (which is probably the case if you upgraded to Windows 11). To do that, you first need to find the <code>efi</code> partition on your system:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">&gt; fdisk -l
+Disk /dev/nvme0n1: 476.94 GiB, <span style="color:#ae81ff">512110190592</span> bytes, <span style="color:#ae81ff">1000215216</span> sectors
+Disk model: BC711 NVMe SK hynix 512GB
+Units: sectors of <span style="color:#ae81ff">1</span> * 512 <span style="color:#f92672">=</span> <span style="color:#ae81ff">512</span> bytes
+Sector size <span style="color:#f92672">(</span>logical/physical<span style="color:#f92672">)</span>: <span style="color:#ae81ff">512</span> bytes / <span style="color:#ae81ff">512</span> bytes
+I/O size <span style="color:#f92672">(</span>minimum/optimal<span style="color:#f92672">)</span>: <span style="color:#ae81ff">512</span> bytes / <span style="color:#ae81ff">512</span> bytes
+Disklabel type: gpt
+Disk identifier: 0DC7E01E-9E0B-4C27-A86B-8F87A2043B1F
+
+Device               Start        End   Sectors   Size Type
+/dev/nvme0n1p1        <span style="color:#ae81ff">2048</span>    <span style="color:#ae81ff">1050623</span>   <span style="color:#ae81ff">1048576</span>   512M EFI System
+/dev/nvme0n1p2     <span style="color:#ae81ff">1050624</span>    <span style="color:#ae81ff">5244927</span>   <span style="color:#ae81ff">4194304</span>     2G Linux filesystem
+/dev/nvme0n1p3     <span style="color:#ae81ff">5244928</span>   <span style="color:#ae81ff">47187967</span>  <span style="color:#ae81ff">41943040</span>    20G Linux filesystem
+/dev/nvme0n1p4    <span style="color:#ae81ff">47187968</span>  <span style="color:#ae81ff">297259007</span> <span style="color:#ae81ff">250071040</span> 119.2G Microsoft basic data
+/dev/nvme0n1p5   <span style="color:#ae81ff">297259008</span>  <span style="color:#ae81ff">298844159</span>   <span style="color:#ae81ff">1585152</span>   774M Windows recovery environment
+/dev/nvme0n1p6   <span style="color:#ae81ff">298846208</span>  <span style="color:#ae81ff">403703807</span> <span style="color:#ae81ff">104857600</span>    50G Linux filesystem
+/dev/nvme0n1p7   <span style="color:#ae81ff">403703808</span>  <span style="color:#ae81ff">420481023</span>  <span style="color:#ae81ff">16777216</span>     8G Linux swap
+/dev/nvme0n1p8   <span style="color:#ae81ff">420481024</span>  <span style="color:#ae81ff">588251135</span> <span style="color:#ae81ff">167770112</span>    80G Linux filesystem
+/dev/nvme0n1p9   <span style="color:#ae81ff">588251136</span> <span style="color:#ae81ff">1000148991</span> <span style="color:#ae81ff">411897856</span> 196.4G Linux filesystem
+/dev/nvme0n1p10 <span style="color:#ae81ff">1000148992</span> <span style="color:#ae81ff">1000181759</span>     <span style="color:#ae81ff">32768</span>    16M Microsoft reserved
+/dev/nvme0n1p11 <span style="color:#ae81ff">1000181760</span> <span style="color:#ae81ff">1000214527</span>     <span style="color:#ae81ff">32768</span>    16M BIOS boot
+</code></pre></div><p>In the list of devices, there should be a partition marked <code>EFI System</code>. That&rsquo;s the one, note down the location of the device. We will now mount the partition, in my case it will be to /<code>boot/efi</code> :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">root&gt; mkdir /boot/efi
+root&gt; mount /dev/nvme0n1p1 /boot/efi
+</code></pre></div><p>Now that everything is in place, we can proceed to reinstalling GRUB.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">&gt; grub-install --target<span style="color:#f92672">=</span>x86_64-efi --efi-directory<span style="color:#f92672">=</span>/boot/efi --boot-directory<span style="color:#f92672">=</span>/boot
+</code></pre></div><p>You will probably need to change a few things in this command :</p>
+<ul>
+<li><code>--target</code> :  your system Architecture Type in my case x86_64-efi,</li>
+<li><code>--efi-directory</code> : tell grub where to install the bootloader which is the partition we just mounted, and finally</li>
+<li><code>--boot-directory</code> : where your GRUB config is located so /boot.</li>
+</ul>
+<p>And for the grand final :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">root&gt; grub-mkconfig -o /boot/grub/grub.cfg
+</code></pre></div><p>If everything went fine, you should now have your GRUB functioning properly again. Assuming of course you had a problem and installation similar mine.</p>
+<p>If you need any more assistance, I advise you to continue to look on the internet on websites like <a href="https://unix.stackexchange.com/">unix.stackexchange.com</a> or the like.</p>
+]]></content></item></channel></rss>
