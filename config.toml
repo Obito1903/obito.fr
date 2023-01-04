@@ -61,6 +61,10 @@ disableHugoGeneratorInject = false
   keywords = "homepage, blog"
   images = [""]
 
+  [params.plausible]
+    domain = "obito.fr"
+    destination = "https://plausible.obito.fr/js/script.js"
+
   # Custom footer
   # If you want, you can easily override the default footer with your own content.
   #
