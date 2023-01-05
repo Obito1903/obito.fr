@@ -33,9 +33,6 @@ disableHugoGeneratorInject = false
   dateformNum     = "2006-01-02"
   dateformNumTime = "2006-01-02 15:04"
 
-  # Subtitle for home
-  homeSubtitle = "Portofolio, Thoughts, stories and ideas from my everyday life."
-
   # Set disableReadOtherPosts to true in order to hide the links to other posts.
   disableReadOtherPosts = false
 
@@ -60,6 +57,10 @@ disableHugoGeneratorInject = false
   description = "Samuel Rodrigues portfolio/blog"
   keywords = "homepage, blog"
   images = [""]
+
+  [params.logo]
+    logoText = "Obito1903"
+    logoHomeLink = "/"
 
   [params.plausible]
     domain = "obito.fr"
@@ -97,17 +98,18 @@ disableHugoGeneratorInject = false
   [languages.en]
     title = "Samuel Rodrigues"
     subtitle = "Portofolio, Thoughts, stories and ideas from my everyday life."
+    homeSubtitle = "Portofolio, Thoughts, stories and ideas from my everyday life."
     keywords = ""
     copyright = '<a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>'
     readOtherPosts = "Read other posts"
 
-    [languages.en.params.logo]
-      logoText = "Obito1903"
-      logoHomeLink = "/"
-    # or
-    #
-    # path = "/img/your-example-logo.svg"
-    # alt = "Your example logo alt text"
+  # [languages.fr]
+  #   title = "Samuel Rodrigues"
+  #   subtitle = "Portofolio, Pensées, histoires et idées de ma vie quotidienne."
+  #   homeSubtitle = "Portofolio, Pensées, histoires et idées de ma vie quotidienne."
+  #   keywords = ""
+  #   copyright = '<a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>'
+  #   readOtherPosts = "Lire d'autres articles"
 
   # And you can even create generic menu
   [[menu.main]]
