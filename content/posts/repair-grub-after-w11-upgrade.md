@@ -1,5 +1,5 @@
 ---
-title: Repair GRUB after a messy Windows 11 upgrade"
+title: "Repair GRUB after a messy Windows 11 upgrade"
 date: 2021-12-24T20:16:45+01:00
 draft: false
 toc: true
