@@ -115,6 +115,13 @@ disableHugoGeneratorInject = false
     name       = "Blog"
     url        = "/posts"
   [[menu.main]]
-    identifier = "about"
-    name       = "About"
-    url        = "about/"
+    identifier = "projects"
+    name       = "Projects"
+    url        = "/projects"
+  # [[menu.main]]
+  #   identifier = "about"
+  #   name       = "About"
+  #   url        = "about/"
+
+[markup.goldmark.renderer]
+  unsafe = true
