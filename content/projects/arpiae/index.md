@@ -11,7 +11,7 @@ ARPIÆ is the Junior-Enterprise of the CY-Tech campus in Pau. Its goal is to pro
 
 As a member of this association, I and another student were tasked with redesigning the website.
 
-Using native JavaScript and the Tailwind CSS framework, we built it around a minimalist and pure design.
+Using native JavaScript and the Tailwind CSS framework, we built it around a minimalist and simple design.
 
 {{< image src="main.png" alt="Main page" position="center" style="border-radius: 8px;" >}}
 

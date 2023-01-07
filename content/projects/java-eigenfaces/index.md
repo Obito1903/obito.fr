@@ -7,9 +7,13 @@ description: "Facial recognotion using the Eigenface algorithm, implemented in J
 repo: "https://github.com/Obito1903/java-eigenfaces"
 ---
 
-At the end of my first year in computer science at CY-Tech, my classmates and I were given a project consisting of implementing the Eigenface algorithm in Java. A programming language that we've learned through the year.
+At the end of my first year in computer science at CY-Tech, my classmates and
+I were given a project consisting of implementing the Eigenface algorithm in Java.
+ A programming language that we've learned through the year.
 
-Eigenface is one of the most basic algorithm used in facial recognition. It is pretty straightforward to implement once you understand it. But its simplicity come at the cost of precision.
+Eigenface is one of the most basic algorithm used in facial recognition.
+It is pretty straightforward to implement once understood. But its simplicity
+come at the cost of precision.
 
 {{< image src="eigenface.png" alt="Main page" position="center" style="border-radius: 8px;" >}}
 

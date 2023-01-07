@@ -103,13 +103,13 @@ disableHugoGeneratorInject = false
     copyright = '<a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>'
     readOtherPosts = "Read other posts"
 
-  # [languages.fr]
-  #   title = "Samuel Rodrigues"
-  #   subtitle = "Portofolio, Pensées, histoires et idées de ma vie quotidienne."
-  #   homeSubtitle = "Portofolio, Pensées, histoires et idées de ma vie quotidienne."
-  #   keywords = ""
-  #   copyright = '<a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>'
-  #   readOtherPosts = "Lire d'autres articles"
+  [languages.fr]
+    title = "Samuel Rodrigues"
+    subtitle = "Portofolio, Pensées, histoires et idées de ma vie quotidienne."
+    homeSubtitle = "Portofolio, Pensées, histoires et idées de ma vie quotidienne."
+    keywords = ""
+    copyright = '<a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>'
+    readOtherPosts = "Lire d'autres articles"
 
   # And you can even create generic menu
   [[menu.main]]
@@ -120,10 +120,10 @@ disableHugoGeneratorInject = false
     identifier = "projects"
     name       = "Projects"
     url        = "/projects"
-  # [[menu.main]]
-  #   identifier = "about"
-  #   name       = "About"
-  #   url        = "about/"
+  [[menu.main]]
+    identifier = "about"
+    name       = "About"
+    url        = "about/"
 
 [markup.goldmark.renderer]
   unsafe = true

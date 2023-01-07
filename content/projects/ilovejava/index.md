@@ -17,7 +17,7 @@ This forum would be solely focused on the Java programming language, and other s
 
 ## Features
 
-- User authentification
+- User authentication
 - Full markdown support
 - Syntax highlight
 - Threads and reply

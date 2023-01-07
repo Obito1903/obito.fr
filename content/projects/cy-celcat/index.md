@@ -4,7 +4,7 @@ date: 2021-05-29T14:05:11+01:00
 draft: false
 toc: false
 repo: "https://github.com/Obito1903/CY-celcat"
-description: "A small program to fetch Celcat calendar and save it to an ICS or PNG file for the CY-tech university."
+description: "A small program to fetch Celcat calendars and save it to an ICS or PNG file for the CY-tech university."
 ---
 
 **CY-Celcat** is a project initially created to address a problem with the CY-Tech agenda provider.
