@@ -1,0 +1,154 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Samuel Rodrigues</title><link>https://obito.fr/fr/posts/</link><description>Recent content in Posts on Samuel Rodrigues</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>&lt;a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0&lt;/a></copyright><lastBuildDate>Tue, 25 Jan 2022 17:13:00 +0100</lastBuildDate><atom:link href="https://obito.fr/fr/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Contrôler votre installation HI-FI avec Home-assistant et un IR-ESP01.</title><link>https://obito.fr/fr/posts/2022/01/contr%C3%B4ler-votre-installation-hi-fi-avec-home-assistant-et-un-ir-esp01./</link><pubDate>Tue, 25 Jan 2022 17:13:00 +0100</pubDate><guid>https://obito.fr/fr/posts/2022/01/contr%C3%B4ler-votre-installation-hi-fi-avec-home-assistant-et-un-ir-esp01./</guid><description>J&amp;rsquo;ai récemment acheté un nouvel amplificateur pour mon installation HI-FI afin de remplacer mon ancien qui devenait capricieux. J&amp;rsquo;ai choisi celui-ci parce que j&amp;rsquo;ai fait une bonne affaire, mais il était également équipé d&amp;rsquo;une télécommande IR pour le contrôler (pas très impressionnant, je sais). Et donc naturellement, j&amp;rsquo;ai voulu l&amp;rsquo;automatiser et l&amp;rsquo;ajouter à mon réseau IoT contrôlé par Home-Assistant, un serveur domotique open-source.
+Pour ce projet, je vais utiliser une carte ESP01 avec le framework ESPHome.</description><content type="html"><![CDATA[
+    <img src="hass-player.png"  alt="Home-assistant media-player"  class="center"  style="border-radius: 8px;"  />
+
+
+<p>J&rsquo;ai récemment acheté un nouvel amplificateur pour mon installation HI-FI afin
+de remplacer mon ancien qui devenait capricieux. J&rsquo;ai choisi celui-ci parce que
+j&rsquo;ai fait une bonne affaire, mais il était également équipé d&rsquo;une télécommande
+IR pour le contrôler (pas très impressionnant, je sais). Et donc naturellement,
+j&rsquo;ai voulu l&rsquo;automatiser et l&rsquo;ajouter à mon réseau IoT contrôlé par
+<a href="https://www.home-assistant.io/">Home-Assistant</a>, un serveur domotique open-source.</p>
+<p>Pour ce projet, je vais utiliser une carte ESP01 avec le framework <a href="https://esphome.io/">ESPHome</a>.</p>
+<h2 id="obtenir-les-codes-ir-de-votre-télécommande">Obtenir les codes IR de votre télécommande</h2>
+<p>Avant de commencer, vous devez d&rsquo;abord mettre la main sur les codes IR de votre
+télécommande, pour pouvoir ensuite les cloner avec l&rsquo;ESP01.
+Vous avez plusieurs possibilités pour cela :</p>
+<ul>
+<li>Trouvez votre télécommande ou une télécommande compatible avec votre appareil
+sur les sites qui répertorient les codes IR des télécommandes, comme Remote Central.</li>
+<li>Enregistrez-les vous-même à l&rsquo;aide d&rsquo;un module récepteur IR (ex : VS1838B)
+connecté à votre ESP.</li>
+</ul>
+<p>Personnellement, comme je n&rsquo;avais pas de récepteur sous la main, j&rsquo;ai opté pour
+Remote Central. Sur le site, vous trouverez une liste des différentes fonctions
+de la télécommande que vous avez choisie et le code <code>Pronto</code> qui leur est associé.
+Le format du code peut être différent selon le site où vous l&rsquo;avez trouvé,
+mais dans la plupart des cas, vous pourrez les utiliser. Pour savoir si votre
+protocole est compatible avec ESPHome, vérifiez <a href="https://esphome.io/components/remote_transmitter.html">ici</a>.</p>
+<h2 id="configuration-de-esphome">Configuration de ESPHome</h2>
+<p>ESPHome est un outil permettant de connecter et de configurer facilement des
+Arduino ou esp à Home Assistant. Dans ce guide, nous allons utiliser la version
+CLI de cet outil dans un conteneur Docker.</p>
+<p>Allez dans un dossier où vous voulez garder la configuration de votre ESP puis
+initialisez le projet ESPHome :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker run --rm -v <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>PWD<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>:/config -it esphome/esphome wizard ir_remote.yaml
+</code></pre></div><p>Cette commande vous demandera d&rsquo;entrer des informations sur la carte que
+vous voulez flasher, la plate-forme, le nom de la carte,
+informations sur le réseau auquel vous voulez qu&rsquo;il se connecte, et enfin
+le mot de passe de l&rsquo;API ESPHome qui sera hébergé sur la carte. À la fin du
+processus, un fichier YAML sera généré avec le nom que vous avez spécifié précédemment.
+Il doit ressembler à quelque chose comme ça :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">esphome</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">ir_remote</span>
+
+<span style="color:#f92672">esp8266</span>:
+  <span style="color:#f92672">board</span>: <span style="color:#ae81ff">esp01</span>
+
+<span style="color:#75715e"># Enable logging</span>
+<span style="color:#f92672">logger</span>:
+
+<span style="color:#75715e"># Enable Home Assistant API</span>
+<span style="color:#f92672">api</span>:
+  <span style="color:#f92672">password</span>: <span style="color:#e6db74">&#34;azertyuiop&#34;</span>
+
+<span style="color:#f92672">ota</span>:
+  <span style="color:#f92672">password</span>: <span style="color:#e6db74">&#34;azertyuiop&#34;</span>
+
+<span style="color:#f92672">wifi</span>:
+  <span style="color:#f92672">ssid</span>: <span style="color:#e6db74">&#34;hello&#34;</span>
+  <span style="color:#f92672">password</span>: <span style="color:#e6db74">&#34;azertyuiop&#34;</span>
+
+  <span style="color:#75715e"># Enable fallback hotspot (captive portal) in case wifi connection fails</span>
+  <span style="color:#f92672">ap</span>:
+    <span style="color:#f92672">ssid</span>: <span style="color:#e6db74">&#34;IR-Remote Fallback Hotspot&#34;</span>
+    <span style="color:#f92672">password</span>: <span style="color:#e6db74">&#34;superstrongpassword&#34;</span>
+
+<span style="color:#f92672">captive_portal</span>:
+</code></pre></div><p>Ensuite, nous devons demander à ESPhome de créer un émetteur-récepteur infrarouge.
+Pour ce faire, nous devons d&rsquo;abord définir une entré <code>remote_transmitter</code> dans
+notre fichier de configuration :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">remote_transmitter</span>:
+  <span style="color:#f92672">pin</span>: <span style="color:#ae81ff">GPIO2</span>
+  <span style="color:#f92672">carrier_duty_percent</span>: <span style="color:#ae81ff">50</span><span style="color:#ae81ff">%</span>
+</code></pre></div><p>Il suffit de changer l&rsquo;entrée de la broche à la broche à laquelle votre led
+infrarouge sera connecté.</p>
+<p>Ensuite, nous devrons ajouter une entité <code>button</code> pour chaque bouton que vous
+souhaitez émuler.Il suffit d&rsquo;ajouter la section <code>button</code> au YAML, une entrée
+<code>plateform: template</code> pour chacun de vos boutons :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">button</span>:
+  - <span style="color:#f92672">platform</span>: <span style="color:#ae81ff">template</span>
+    <span style="color:#f92672">id</span>: <span style="color:#ae81ff">amp_power_btn</span>
+    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Amp Power Button</span>
+    <span style="color:#f92672">on_press</span>:
+  - <span style="color:#f92672">platform</span>: <span style="color:#ae81ff">template</span>
+    <span style="color:#f92672">id</span>: <span style="color:#ae81ff">amp_vol_plus</span>
+    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Amp Vol+</span>
+    <span style="color:#f92672">on_press</span>:
+</code></pre></div><p>Ensuite, pour chacun des boutons, nous devons spécifier un code correspondant à
+envoyer lorsqu&rsquo;il est activé. Pour cela, nous devons ajouter une action pour
+chaqu&rsquo;un d&rsquo;eux dans la section <code>on_press</code>.
+Vous pouvez trouver une liste d&rsquo;actions possibles <a href="https://esphome.io/components/remote_transmitter.html#remote-transmitter-actions">ici</a>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">platform</span>: <span style="color:#ae81ff">template</span>
+    <span style="color:#f92672">id</span>: <span style="color:#ae81ff">amp_power_btn</span>
+    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Amp Power Button</span>
+    <span style="color:#f92672">on_press</span>:
+      - <span style="color:#f92672">remote_transmitter.transmit_pronto</span>:
+          <span style="color:#f92672">data</span>: <span style="color:#e6db74">&#34;Some pronto hex code&#34;</span>
+</code></pre></div><p>Dans certains cas, l&rsquo;appareil que vous voulez automatiser aura besoin que le
+code soit répété plusieurs fois pour qu&rsquo;il soit enregistré.
+Pour cela, il suffit d&rsquo;ajouter une section <code>repeat</code> sous notre action.
+Dans mon cas, mon ampli nécessite que le code soit envoyé 2 fois :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">remote_transmitter.transmit_pronto</span>:
+    <span style="color:#f92672">data</span>: <span style="color:#e6db74">&#34;Some pronto hex code&#34;</span>
+    <span style="color:#f92672">repeat</span>:
+        <span style="color:#f92672">times</span>: <span style="color:#ae81ff">2</span>
+</code></pre></div><p>Une fois que vous avez fini d&rsquo;ajouter tous vos boutons, nous pouvons passer à
+l&rsquo;envoie de la configuration vers votre ESP. Pour ce faire, il suffit de le
+brancher à votre ordinateur et de lancer la compilation et l&rsquo;envoie avec ESPhome :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker run --rm -v <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>PWD<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>:/config --device<span style="color:#f92672">=</span>/dev/ttyUSB0 -it esphome/esphome run ir_remote.yaml
+</code></pre></div><p>Où <code>/dev/ttyUSB0</code> est le port usb auquel votre ESP est connecté.</p>
+<h2 id="câblage-de-lémetteur-ir">Câblage de l&rsquo;émetteur IR</h2>
+<p>La prochaine étape est de construire notre circuit pour piloter la led avec l&rsquo;ESP.</p>
+<p>Vous aurez besoin de :</p>
+<ul>
+<li>Une alimentation 3.3v</li>
+<li>1x LED infrarouge</li>
+<li>1x resistance de 1k Ohm</li>
+<li>1x Transistor PNP (P2N2222A dans mon cas)</li>
+</ul>
+<p><strong>Schéma du circuit :</strong></p>
+
+    <img src="circuit-diagram.png"  alt="Circuit diagram"  class="center"  style="border-radius: 8px;"  />
+
+
+<p><br/><br/></p>
+
+    <img src="circuit-drawing.png"  alt="Circuit drawing"  class="center"  style="border-radius: 8px;"  />
+
+
+<p>Une fois que tout est câblé, vous pouvez tout mettre sous tension. Pour vérifier
+que tout fonctionne correctement, vous pouvez retourner sur votre ordinateur
+et lancer le tableau de bord d&rsquo;ESPhome :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker run --rm --net<span style="color:#f92672">=</span>host -v <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>PWD<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>:/config -it esphome/esphome
+</code></pre></div>
+    <img src="esp-home-dashboard.png"  alt="Circuit drawing"  class="center"  style="border-radius: 8px;"  />
+
+
+<p>Si tout va bien, vous devriez voir votre ESP apparaître en ligne d&rsquo;ici une
+minute ou deux.</p>
+<h2 id="ajout-de-esphome-à-home-assistant">Ajout de ESPhome à Home-assistant</h2>
+<p>Enfin, pour ajouter votre télécommande au Home-assistant, vous avez deux options :</p>
+<ul>
+<li>Attendre que Home-assistant trouve votre ESP.</li>
+<li>L&rsquo;ajouter manuellement si vous connaissez son adresse IP.</li>
+</ul>
+<p>Si vous choisissez de l&rsquo;ajouter manuellement, c&rsquo;est assez simple :
+il suffit d&rsquo;aller dans le menu Integration dans les paramètres de Hass et d&rsquo;ajouter
+l&rsquo;intégration ESPhome. Il vous sera demandé d&rsquo;entrer l&rsquo;IP de l&rsquo;ESP.
+Une fois cela fait, il vérifiera s&rsquo;il peut l&rsquo;atteindre et si oui, c&rsquo;est terminé !</p>
+
+    <img src="hass-entity.png"  alt="Circuit drawing"  class="center"  style="border-radius: 8px;"  />
+
+
+]]></content></item></channel></rss>

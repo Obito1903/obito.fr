@@ -1,0 +1,276 @@
+<!doctype html><html lang=fr>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="ie=edge">
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=author content="Samuel Rodrigues ">
+<meta name=description content="J&amp;rsquo;ai récemment acheté un nouvel amplificateur pour mon installation HI-FI afin de remplacer mon ancien qui devenait capricieux. J&amp;rsquo;ai choisi celui-ci parce que j&amp;rsquo;ai fait une bonne affaire, mais il était également équipé d&amp;rsquo;une télécommande IR pour le contrôler (pas très impressionnant, je sais). Et donc naturellement, j&amp;rsquo;ai voulu l&amp;rsquo;automatiser et l&amp;rsquo;ajouter à mon réseau IoT contrôlé par Home-Assistant, un serveur domotique open-source.
+Pour ce projet, je vais utiliser une carte ESP01 avec le framework ESPHome.">
+<meta name=keywords content=",home-assistant,esphome,esp01">
+<meta name=robots content="noodp">
+<meta name=theme-color content>
+<link rel=canonical href=https://obito.fr/fr/posts/2022/01/contr%C3%B4ler-votre-installation-hi-fi-avec-home-assistant-et-un-ir-esp01./>
+<title>
+Contrôler votre installation HI-FI avec Home-assistant et un IR-ESP01. :: Samuel Rodrigues — Portofolio, Pensées, histoires et idées de ma vie quotidienne.
+</title>
+<link href=https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css rel=stylesheet type=text/css>
+<link rel=stylesheet href=https://obito.fr/main.9889ad963bea92f1dc07a83d7b8be2f8db6417517bc8a64c2a95946af412e9a2.css>
+<link rel=apple-touch-icon sizes=180x180 href=https://obito.fr/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=https://obito.fr/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=https://obito.fr/favicon-16x16.png>
+<link rel=manifest href=https://obito.fr/site.webmanifest>
+<link rel=mask-icon href=https://obito.fr/safari-pinned-tab.svg color>
+<link rel="shortcut icon" href=https://obito.fr/favicon.ico>
+<meta name=msapplication-TileColor content>
+<meta itemprop=name content="Contrôler votre installation HI-FI avec Home-assistant et un IR-ESP01.">
+<meta itemprop=description content="J&rsquo;ai récemment acheté un nouvel amplificateur pour mon installation HI-FI afin de remplacer mon ancien qui devenait capricieux. J&rsquo;ai choisi celui-ci parce que j&rsquo;ai fait une bonne affaire, mais il était également équipé d&rsquo;une télécommande IR pour le contrôler (pas très impressionnant, je sais). Et donc naturellement, j&rsquo;ai voulu l&rsquo;automatiser et l&rsquo;ajouter à mon réseau IoT contrôlé par Home-Assistant, un serveur domotique open-source.
+Pour ce projet, je vais utiliser une carte ESP01 avec le framework ESPHome."><meta itemprop=datePublished content="2022-01-25T17:13:00+01:00">
+<meta itemprop=dateModified content="2022-01-25T17:13:00+01:00">
+<meta itemprop=wordCount content="866"><meta itemprop=image content="https://obito.fr/">
+<meta itemprop=keywords content="home-assistant,esphome,esp01,">
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://obito.fr/">
+<meta name=twitter:title content="Contrôler votre installation HI-FI avec Home-assistant et un IR-ESP01.">
+<meta name=twitter:description content="J&rsquo;ai récemment acheté un nouvel amplificateur pour mon installation HI-FI afin de remplacer mon ancien qui devenait capricieux. J&rsquo;ai choisi celui-ci parce que j&rsquo;ai fait une bonne affaire, mais il était également équipé d&rsquo;une télécommande IR pour le contrôler (pas très impressionnant, je sais). Et donc naturellement, j&rsquo;ai voulu l&rsquo;automatiser et l&rsquo;ajouter à mon réseau IoT contrôlé par Home-Assistant, un serveur domotique open-source.
+Pour ce projet, je vais utiliser une carte ESP01 avec le framework ESPHome.">
+<meta property="og:title" content="Contrôler votre installation HI-FI avec Home-assistant et un IR-ESP01.">
+<meta property="og:description" content="J&rsquo;ai récemment acheté un nouvel amplificateur pour mon installation HI-FI afin de remplacer mon ancien qui devenait capricieux. J&rsquo;ai choisi celui-ci parce que j&rsquo;ai fait une bonne affaire, mais il était également équipé d&rsquo;une télécommande IR pour le contrôler (pas très impressionnant, je sais). Et donc naturellement, j&rsquo;ai voulu l&rsquo;automatiser et l&rsquo;ajouter à mon réseau IoT contrôlé par Home-Assistant, un serveur domotique open-source.
+Pour ce projet, je vais utiliser une carte ESP01 avec le framework ESPHome.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://obito.fr/fr/posts/2022/01/contr%C3%B4ler-votre-installation-hi-fi-avec-home-assistant-et-un-ir-esp01./"><meta property="og:image" content="https://obito.fr/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2022-01-25T17:13:00+01:00">
+<meta property="article:modified_time" content="2022-01-25T17:13:00+01:00"><meta property="og:site_name" content="Samuel Rodrigues">
+<meta property="article:published_time" content="2022-01-25 17:13:00 +0100 +0100">
+</head>
+<body>
+<div class=container>
+<header class=header>
+<span class=header__inner>
+<a href=https://obito.fr/ style=text-decoration:none>
+<div class=logo>
+<span class=logo__mark>></span>
+<span class=logo__text>Obito1903</span>
+<span class=logo__cursor>
+</span>
+</div>
+</a>
+<span class=header__right>
+<nav class=menu>
+<ul class=menu__inner><li><a href=https://obito.fr/fr/about/>About</a></li><li><a href=https://obito.fr/fr/posts>Blog</a></li><li><a href=https://obito.fr/fr/projects>Projects</a></li>
+<div class=submenu>
+<li class=dropdown>
+<a href=javascript:void(0) class=dropbtn>fr</a>
+<div class=dropdown-content>
+<a title=en href=https://obito.fr/posts/2022/01/control-your-hi-fi-setup-with-home-assistant-and-an-ir-esp01/>en</a>
+</div>
+</li>
+</div>
+</ul>
+</nav>
+<span class=menu-trigger><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+</span>
+</span>
+</span>
+</header>
+<div class=content>
+<main class=post>
+<div class=post-info>
+<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+5 minutes
+| Aussi disponible en
+<a href=https://obito.fr/posts/2022/01/control-your-hi-fi-setup-with-home-assistant-and-an-ir-esp01/><span class="flag flag-icon flag-icon-gb flag-icon-squared"></span></a>
+</p>
+</div>
+<article>
+<h1 class=post-title>
+<a href=https://obito.fr/fr/posts/2022/01/contr%C3%B4ler-votre-installation-hi-fi-avec-home-assistant-et-un-ir-esp01./>Contrôler votre installation HI-FI avec Home-assistant et un IR-ESP01.</a>
+</h1>
+<hr>
+<aside id=toc>
+<div class=toc-title>Table des matières</div>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#obtenir-les-codes-ir-de-votre-télécommande>Obtenir les codes IR de votre télécommande</a></li>
+<li><a href=#configuration-de-esphome>Configuration de ESPHome</a></li>
+<li><a href=#câblage-de-lémetteur-ir>Câblage de l&rsquo;émetteur IR</a></li>
+<li><a href=#ajout-de-esphome-à-home-assistant>Ajout de ESPhome à Home-assistant</a></li>
+</ul>
+</nav>
+</aside>
+<hr>
+<div class=post-content>
+<img src=hass-player.png alt="Home-assistant media-player" class=center style=border-radius:8px>
+<p>J&rsquo;ai récemment acheté un nouvel amplificateur pour mon installation HI-FI afin
+de remplacer mon ancien qui devenait capricieux. J&rsquo;ai choisi celui-ci parce que
+j&rsquo;ai fait une bonne affaire, mais il était également équipé d&rsquo;une télécommande
+IR pour le contrôler (pas très impressionnant, je sais). Et donc naturellement,
+j&rsquo;ai voulu l&rsquo;automatiser et l&rsquo;ajouter à mon réseau IoT contrôlé par
+<a href=https://www.home-assistant.io/>Home-Assistant</a>, un serveur domotique open-source.</p>
+<p>Pour ce projet, je vais utiliser une carte ESP01 avec le framework <a href=https://esphome.io/>ESPHome</a>.</p>
+<h2 id=obtenir-les-codes-ir-de-votre-télécommande>Obtenir les codes IR de votre télécommande</h2>
+<p>Avant de commencer, vous devez d&rsquo;abord mettre la main sur les codes IR de votre
+télécommande, pour pouvoir ensuite les cloner avec l&rsquo;ESP01.
+Vous avez plusieurs possibilités pour cela :</p>
+<ul>
+<li>Trouvez votre télécommande ou une télécommande compatible avec votre appareil
+sur les sites qui répertorient les codes IR des télécommandes, comme Remote Central.</li>
+<li>Enregistrez-les vous-même à l&rsquo;aide d&rsquo;un module récepteur IR (ex : VS1838B)
+connecté à votre ESP.</li>
+</ul>
+<p>Personnellement, comme je n&rsquo;avais pas de récepteur sous la main, j&rsquo;ai opté pour
+Remote Central. Sur le site, vous trouverez une liste des différentes fonctions
+de la télécommande que vous avez choisie et le code <code>Pronto</code> qui leur est associé.
+Le format du code peut être différent selon le site où vous l&rsquo;avez trouvé,
+mais dans la plupart des cas, vous pourrez les utiliser. Pour savoir si votre
+protocole est compatible avec ESPHome, vérifiez <a href=https://esphome.io/components/remote_transmitter.html>ici</a>.</p>
+<h2 id=configuration-de-esphome>Configuration de ESPHome</h2>
+<p>ESPHome est un outil permettant de connecter et de configurer facilement des
+Arduino ou esp à Home Assistant. Dans ce guide, nous allons utiliser la version
+CLI de cet outil dans un conteneur Docker.</p>
+<p>Allez dans un dossier où vous voulez garder la configuration de votre ESP puis
+initialisez le projet ESPHome :</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>docker run --rm -v <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>PWD<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>:/config -it esphome/esphome wizard ir_remote.yaml
+</code></pre></div><p>Cette commande vous demandera d&rsquo;entrer des informations sur la carte que
+vous voulez flasher, la plate-forme, le nom de la carte,
+informations sur le réseau auquel vous voulez qu&rsquo;il se connecte, et enfin
+le mot de passe de l&rsquo;API ESPHome qui sera hébergé sur la carte. À la fin du
+processus, un fichier YAML sera généré avec le nom que vous avez spécifié précédemment.
+Il doit ressembler à quelque chose comme ça :</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=color:#f92672>esphome</span>:
+  <span style=color:#f92672>name</span>: <span style=color:#ae81ff>ir_remote</span>
+
+<span style=color:#f92672>esp8266</span>:
+  <span style=color:#f92672>board</span>: <span style=color:#ae81ff>esp01</span>
+
+<span style=color:#75715e># Enable logging</span>
+<span style=color:#f92672>logger</span>:
+
+<span style=color:#75715e># Enable Home Assistant API</span>
+<span style=color:#f92672>api</span>:
+  <span style=color:#f92672>password</span>: <span style=color:#e6db74>&#34;azertyuiop&#34;</span>
+
+<span style=color:#f92672>ota</span>:
+  <span style=color:#f92672>password</span>: <span style=color:#e6db74>&#34;azertyuiop&#34;</span>
+
+<span style=color:#f92672>wifi</span>:
+  <span style=color:#f92672>ssid</span>: <span style=color:#e6db74>&#34;hello&#34;</span>
+  <span style=color:#f92672>password</span>: <span style=color:#e6db74>&#34;azertyuiop&#34;</span>
+
+  <span style=color:#75715e># Enable fallback hotspot (captive portal) in case wifi connection fails</span>
+  <span style=color:#f92672>ap</span>:
+    <span style=color:#f92672>ssid</span>: <span style=color:#e6db74>&#34;IR-Remote Fallback Hotspot&#34;</span>
+    <span style=color:#f92672>password</span>: <span style=color:#e6db74>&#34;superstrongpassword&#34;</span>
+
+<span style=color:#f92672>captive_portal</span>:
+</code></pre></div><p>Ensuite, nous devons demander à ESPhome de créer un émetteur-récepteur infrarouge.
+Pour ce faire, nous devons d&rsquo;abord définir une entré <code>remote_transmitter</code> dans
+notre fichier de configuration :</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=color:#f92672>remote_transmitter</span>:
+  <span style=color:#f92672>pin</span>: <span style=color:#ae81ff>GPIO2</span>
+  <span style=color:#f92672>carrier_duty_percent</span>: <span style=color:#ae81ff>50</span><span style=color:#ae81ff>%</span>
+</code></pre></div><p>Il suffit de changer l&rsquo;entrée de la broche à la broche à laquelle votre led
+infrarouge sera connecté.</p>
+<p>Ensuite, nous devrons ajouter une entité <code>button</code> pour chaque bouton que vous
+souhaitez émuler.Il suffit d&rsquo;ajouter la section <code>button</code> au YAML, une entrée
+<code>plateform: template</code> pour chacun de vos boutons :</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=color:#f92672>button</span>:
+  - <span style=color:#f92672>platform</span>: <span style=color:#ae81ff>template</span>
+    <span style=color:#f92672>id</span>: <span style=color:#ae81ff>amp_power_btn</span>
+    <span style=color:#f92672>name</span>: <span style=color:#ae81ff>Amp Power Button</span>
+    <span style=color:#f92672>on_press</span>:
+  - <span style=color:#f92672>platform</span>: <span style=color:#ae81ff>template</span>
+    <span style=color:#f92672>id</span>: <span style=color:#ae81ff>amp_vol_plus</span>
+    <span style=color:#f92672>name</span>: <span style=color:#ae81ff>Amp Vol+</span>
+    <span style=color:#f92672>on_press</span>:
+</code></pre></div><p>Ensuite, pour chacun des boutons, nous devons spécifier un code correspondant à
+envoyer lorsqu&rsquo;il est activé. Pour cela, nous devons ajouter une action pour
+chaqu&rsquo;un d&rsquo;eux dans la section <code>on_press</code>.
+Vous pouvez trouver une liste d&rsquo;actions possibles <a href=https://esphome.io/components/remote_transmitter.html#remote-transmitter-actions>ici</a>.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml>- <span style=color:#f92672>platform</span>: <span style=color:#ae81ff>template</span>
+    <span style=color:#f92672>id</span>: <span style=color:#ae81ff>amp_power_btn</span>
+    <span style=color:#f92672>name</span>: <span style=color:#ae81ff>Amp Power Button</span>
+    <span style=color:#f92672>on_press</span>:
+      - <span style=color:#f92672>remote_transmitter.transmit_pronto</span>:
+          <span style=color:#f92672>data</span>: <span style=color:#e6db74>&#34;Some pronto hex code&#34;</span>
+</code></pre></div><p>Dans certains cas, l&rsquo;appareil que vous voulez automatiser aura besoin que le
+code soit répété plusieurs fois pour qu&rsquo;il soit enregistré.
+Pour cela, il suffit d&rsquo;ajouter une section <code>repeat</code> sous notre action.
+Dans mon cas, mon ampli nécessite que le code soit envoyé 2 fois :</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml>- <span style=color:#f92672>remote_transmitter.transmit_pronto</span>:
+    <span style=color:#f92672>data</span>: <span style=color:#e6db74>&#34;Some pronto hex code&#34;</span>
+    <span style=color:#f92672>repeat</span>:
+        <span style=color:#f92672>times</span>: <span style=color:#ae81ff>2</span>
+</code></pre></div><p>Une fois que vous avez fini d&rsquo;ajouter tous vos boutons, nous pouvons passer à
+l&rsquo;envoie de la configuration vers votre ESP. Pour ce faire, il suffit de le
+brancher à votre ordinateur et de lancer la compilation et l&rsquo;envoie avec ESPhome :</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>docker run --rm -v <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>PWD<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>:/config --device<span style=color:#f92672>=</span>/dev/ttyUSB0 -it esphome/esphome run ir_remote.yaml
+</code></pre></div><p>Où <code>/dev/ttyUSB0</code> est le port usb auquel votre ESP est connecté.</p>
+<h2 id=câblage-de-lémetteur-ir>Câblage de l&rsquo;émetteur IR</h2>
+<p>La prochaine étape est de construire notre circuit pour piloter la led avec l&rsquo;ESP.</p>
+<p>Vous aurez besoin de :</p>
+<ul>
+<li>Une alimentation 3.3v</li>
+<li>1x LED infrarouge</li>
+<li>1x resistance de 1k Ohm</li>
+<li>1x Transistor PNP (P2N2222A dans mon cas)</li>
+</ul>
+<p><strong>Schéma du circuit :</strong></p>
+<img src=circuit-diagram.png alt="Circuit diagram" class=center style=border-radius:8px>
+<p><br><br></p>
+<img src=circuit-drawing.png alt="Circuit drawing" class=center style=border-radius:8px>
+<p>Une fois que tout est câblé, vous pouvez tout mettre sous tension. Pour vérifier
+que tout fonctionne correctement, vous pouvez retourner sur votre ordinateur
+et lancer le tableau de bord d&rsquo;ESPhome :</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>docker run --rm --net<span style=color:#f92672>=</span>host -v <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>PWD<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>:/config -it esphome/esphome
+</code></pre></div>
+<img src=esp-home-dashboard.png alt="Circuit drawing" class=center style=border-radius:8px>
+<p>Si tout va bien, vous devriez voir votre ESP apparaître en ligne d&rsquo;ici une
+minute ou deux.</p>
+<h2 id=ajout-de-esphome-à-home-assistant>Ajout de ESPhome à Home-assistant</h2>
+<p>Enfin, pour ajouter votre télécommande au Home-assistant, vous avez deux options :</p>
+<ul>
+<li>Attendre que Home-assistant trouve votre ESP.</li>
+<li>L&rsquo;ajouter manuellement si vous connaissez son adresse IP.</li>
+</ul>
+<p>Si vous choisissez de l&rsquo;ajouter manuellement, c&rsquo;est assez simple :
+il suffit d&rsquo;aller dans le menu Integration dans les paramètres de Hass et d&rsquo;ajouter
+l&rsquo;intégration ESPhome. Il vous sera demandé d&rsquo;entrer l&rsquo;IP de l&rsquo;ESP.
+Une fois cela fait, il vérifiera s&rsquo;il peut l&rsquo;atteindre et si oui, c&rsquo;est terminé !</p>
+<img src=hass-entity.png alt="Circuit drawing" class=center style=border-radius:8px>
+</div>
+</article>
+<hr>
+<div class=post-info>
+<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83.0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7" y2="7"/></svg>
+<span class=tag><a href=https://obito.fr/fr/tags/home-assistant/>home-assistant</a></span>
+<span class=tag><a href=https://obito.fr/fr/tags/esphome/>esphome</a></span>
+<span class=tag><a href=https://obito.fr/fr/tags/esp01/>esp01</a></span>
+</p>
+<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6A2 2 0 004 4v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+866 Mots
+</p>
+<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+2022-01-25 16:13
+</p>
+</div>
+</main>
+</div>
+<footer class=footer>
+<div class=footer__inner>
+<div class=footer__content>
+<span><a href=https://obito.fr/>Samuel Rodrigues</a></span>
+<span><a href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank rel=noopener>CC BY-NC 4.0</a></span>
+<span><a href=https://obito.fr/fr/%20posts/index.xml target=_blank title=rss><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 019 9"/><path d="M4 4a16 16 0 0116 16"/><circle cx="5" cy="19" r="1"/></svg></a></span>
+</div>
+</div>
+<div class=footer__inner>
+<div class=footer__content>
+<span>Powered by <a href=http://gohugo.io>Hugo</a></span><span>Made with &#10084; by <a href=https://github.com/obito1903>Obito1903</a></span>
+</div>
+</div>
+</footer>
+</div>
+<script type=text/javascript src=https://obito.fr/bundle.min.617ca242d692c44a5b9d7d50bb64ecba7c8e8b8e27c8d46ada65aa90950dfd263fdf84787e4c894121633d2ca72c37cddc1defd82020753f6dfa812387c1139d.js integrity="sha512-YXyiQtaSxEpbnX1Qu2TsunyOi44nyNRq2mWqkJUN/SY/34R4fkyJQSFjPSynLDfN3B3v2CAgdT9t+oEjh8ETnQ=="></script>
+<script defer data-domain=obito.fr src=https://plausible.obito.fr/js/script.js></script>
+</body>
+</html>

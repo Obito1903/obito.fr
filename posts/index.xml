@@ -88,17 +88,33 @@ The issue that I encountered is in the ORM itself. The crate diesel.</descriptio
 <p>I recently bought a new integrated amplifier for my hi-fi setup to replace my old malfunctioning one. I mainly chose this one because I had a good deal on it, but it also came with a IR-remote to control it (not that impressive I know). And so naturally I wanted to automate it and add it with my IoT network which is controlled by <a href="https://www.home-assistant.io/">Home-Assistant</a>, an open-source home automation tool.</p>
 <p>For this project I&rsquo;ll be using a ESP01 board with the <a href="https://esphome.io/">ESPHome</a> framework</p>
 <h2 id="getting-your-remote-ir-codes">Getting your remote IR-codes</h2>
-<p>Before beginning, you&rsquo;ll first need to get your hands on the remote IR-codes, to then be able to clone them with the ESP01. You have multiple option for that :</p>
+<p>Before beginning, you&rsquo;ll first need to get your hands on the remote IR-codes,
+to then be able to clone them with the ESP01. You have multiple option for that :</p>
 <ul>
-<li>Find your remote or one compatible with your device on sites that list remote IR-codes like Remote Central</li>
-<li>Record them yourself with the help of a IR-receiver module (ex : VS1838B) connected to your ESP.</li>
+<li>Find your remote or one compatible with your device on sites that list remote
+IR-codes like Remote Central</li>
+<li>Record them yourself with the help of an IR-receiver module (ex : VS1838B)
+connected to your ESP.</li>
 </ul>
-<p>Personally, since I did not have a receiver on hand, I went with Remote Central. On the website, you&rsquo;ll be presented with a list of the different functions for the remote you choose and their associated Pronto code. The format of the code might be different depending on the website where you found it, but in most cases, you&rsquo;ll be able to use them. To see if your protocol is compatible with ESPHome, check <a href="https://esphome.io/components/remote_transmitter.html">here</a></p>
+<p>Personally, since I did not have a receiver on hand, I went with Remote Central.
+On the website, you&rsquo;ll be presented with a list of the different functions for
+the remote you choose and their associated <code>Pronto</code> code. The format of the code
+might be different depending on the website where you found it, but in most cases,
+you&rsquo;ll be able to use them. To see if your protocol is compatible with ESPHome,
+check <a href="https://esphome.io/components/remote_transmitter.html">here</a></p>
 <h2 id="setting-up-esphome">Setting up ESPHome</h2>
-<p>ESPHome is a tool to easily connect, and configure devices like Arduino, and esp to Home Assistant. In this guide, we will use the CLI version of this tool in a docker container.</p>
-<p>Go to a folder where you want to put the configuration for esp then initialize the ESPHome project :</p>
+<p>ESPHome is a tool to easily connect, and configure devices like Arduino, and ESP
+to Home Assistant. In this guide, we will use the CLI version of this tool in a
+docker container.</p>
+<p>Go to a folder where you want to put the configuration for ESP then initialize
+the ESPHome project :</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker run --rm -v <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>PWD<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>:/config -it esphome/esphome wizard ir_remote.yaml
-</code></pre></div><p>This command will ask you to enter some information on the device you want to flash, name of the device, platform, board name, information about the network to which you want it to connect to, and finally the password of the ESPHome API that will be hosted on the board. At the end of the process, a YAML file will be generated with the name you specified earlier. It should look something like that :</p>
+</code></pre></div><p>This command will ask you to enter some information on the device you want to
+flash, name of the device, platform, board name, information about the network
+to which you want it to connect to, and finally the password of the ESPHome API
+that will be hosted on the board. At the end of the process, a YAML file will
+be generated with the name you specified earlier.
+It should look something like that :</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">esphome</span>:
   <span style="color:#f92672">name</span>: <span style="color:#ae81ff">ir_remote</span>
 
@@ -125,12 +141,15 @@ The issue that I encountered is in the ORM itself. The crate diesel.</descriptio
     <span style="color:#f92672">password</span>: <span style="color:#e6db74">&#34;superstrongpassword&#34;</span>
 
 <span style="color:#f92672">captive_portal</span>:
-</code></pre></div><p>Next, we will need to tell ESPhome to create an IR transceiver. To do that, first, we&rsquo;ll need to define a remote_transmitter in our configuration file :</p>
+</code></pre></div><p>Next, we will need to tell ESPhome to create an IR transceiver. To do that, first,
+we&rsquo;ll need to define a <code>remote_transmitter</code> entry in our configuration file :</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">remote_transmitter</span>:
   <span style="color:#f92672">pin</span>: <span style="color:#ae81ff">GPIO2</span>
   <span style="color:#f92672">carrier_duty_percent</span>: <span style="color:#ae81ff">50</span><span style="color:#ae81ff">%</span>
-</code></pre></div><p>Just change the pin entry to the pin to which you&rsquo;re IR-led will be connected.</p>
-<p>Next, we&rsquo;ll have to add a <strong>button</strong> entity for each button that you want to emulate. Just add the button section to the YAML, and add a template platform for each of your buttons :</p>
+</code></pre></div><p>Just change the pin entry to the pin to which youre IR-led will be connected.</p>
+<p>Next, we&rsquo;ll have to add a <code>button</code> entity for each button that you want to emulate.
+Just add the button section to the YAML, and add a template platform for each
+of your buttons :</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">button</span>:
   - <span style="color:#f92672">platform</span>: <span style="color:#ae81ff">template</span>
     <span style="color:#f92672">id</span>: <span style="color:#ae81ff">amp_power_btn</span>
@@ -140,14 +159,18 @@ The issue that I encountered is in the ORM itself. The crate diesel.</descriptio
     <span style="color:#f92672">id</span>: <span style="color:#ae81ff">amp_vol_plus</span>
     <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Amp Vol+</span>
     <span style="color:#f92672">on_press</span>:
-</code></pre></div><p>Then for each of the buttons, we need to specify a corresponding code to send when it is activated. For that, we need to add an action for each button under the <strong>on_press</strong> section. You can find a list of possible action <a href="https://esphome.io/components/remote_transmitter.html#remote-transmitter-actions">here</a>.</p>
+</code></pre></div><p>Then for each of the buttons, we need to specify a corresponding code to send when
+it is activated. For that, we need to add an action for each button under the
+<code>on_press</code> section. You can find a list of possible action <a href="https://esphome.io/components/remote_transmitter.html#remote-transmitter-actions">here</a>.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">platform</span>: <span style="color:#ae81ff">template</span>
     <span style="color:#f92672">id</span>: <span style="color:#ae81ff">amp_power_btn</span>
     <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Amp Power Button</span>
     <span style="color:#f92672">on_press</span>:
       - <span style="color:#f92672">remote_transmitter.transmit_pronto</span>:
           <span style="color:#f92672">data</span>: <span style="color:#e6db74">&#34;Some pronto hex code&#34;</span>
-</code></pre></div><p>In some cases, the device you want to automate will need the code to be repeated multiple times for it to be registered. To do that you can just add a <strong>repeat</strong> section under our action. In my case, my amp requires the code to be sent 2 times :</p>
+</code></pre></div><p>In some cases, the device you want to automate will need the code to be repeated
+multiple times for it to be registered. To do that you can just add a <code>repeat</code>
+section under our action. In my case, my amp requires the code to be sent 2 times :</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">remote_transmitter.transmit_pronto</span>:
     <span style="color:#f92672">data</span>: <span style="color:#e6db74">&#34;Some pronto hex code&#34;</span>
     <span style="color:#f92672">repeat</span>:
@@ -188,7 +211,9 @@ The issue that I encountered is in the ORM itself. The crate diesel.</descriptio
 <li>Add it manually if you know its IP address.</li>
 </ul>
 <p>If you choose to add it manually, it&rsquo;s pretty simple just go to the Integrations menu in your Hass settings and add the ESPhome integration. It will prompt you to enter the IP of the ESP. Once done it will check if it can reach it and if so you are done.</p>
-<p>One final note on the button entity, If you want to create a button in your Lovelace dashboard to control your remote we will tell the UI button to call the <strong>Button</strong> service on press and select the button entity to activate.</p>
+<p>One final note on the button entity, If you want to create a button in your
+Lovelace dashboard to control your remote you need to tell the UI button to call
+the <strong>Button</strong> service on press and select the button entity to activate.</p>
 
     <img src="hass-entity.png"  alt="Circuit drawing"  class="center"  style="border-radius: 8px;"  />
 
