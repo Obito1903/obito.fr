@@ -60,7 +60,7 @@ disableHugoGeneratorInject = false
 
   [params.logo]
     logoText = "Obito1903"
-    logoHomeLink = "/"
+    # logoHomeLink = "/"
 
   [params.plausible]
     domain = "obito.fr"
