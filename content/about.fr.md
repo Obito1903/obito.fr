@@ -107,6 +107,20 @@ Sass, Java JEE, Spring, Yew.rs...
 ## Formation
 
 > <div>
+>   <span class="date">Fevrier 2023 - Juin 2023</span> <br>
+>   <div class="job-title-container" >
+>     <div>
+>     <span class="job-post">Cursus d'Ingénierie Informatique</span> |
+>     <span class="job-title">Singidunum University - Serbia</span>
+>     </div>
+>   </div>
+>   <hr />
+>   <p class="job-desc">
+>     Semestre d'échange académique pour étudier l'ingénierie informatique.
+>   </p>
+> </div>
+
+> <div>
 >   <span class="date">2021 - 2024</span> <br>
 >   <div class="job-title-container" >
 >     <div>

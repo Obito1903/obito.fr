@@ -69,7 +69,7 @@ Sass, Java JEE, Spring, Yew.rs...
 
 - **IoT**: ESP-Home, Home-assistant, Google home.
 
-## Experience
+## Experiences
 
 > <div>
 >   <span class="date">Nov 2021 - Jun 2022</span> <br>
@@ -103,7 +103,22 @@ Sass, Java JEE, Spring, Yew.rs...
 >   </p>
 > </div>
 
-## Formation
+
+## Formations
+
+> <div>
+>   <span class="date">Feb 2023 - Jun 2023</span> <br>
+>   <div class="job-title-container" >
+>     <div>
+>     <span class="job-post">Computer Engineering Courses</span> |
+>     <span class="job-title">Singidunum University - Serbia</span>
+>     </div>
+>   </div>
+>   <hr />
+>   <p class="job-desc">
+>     One semester of academic exchange to study computer science and engineering.
+>   </p>
+> </div>
 
 > <div>
 >   <span class="date">2021 - 2024</span> <br>
