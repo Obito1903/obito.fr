@@ -1,7 +1,7 @@
 ---
-title: "True Spatial Audio on Linux using HRTF"
+title: "Vertiable Audio Spatial sur Linux avec l'aide des HRTF"
 date: 2023-06-20T01:15:00+01:00
-draft: false
+draft: true
 toc: true
 images:
 tags:
@@ -13,13 +13,13 @@ tags:
   - audio
 ---
 
-Maybe you are like me, and you like being immersed when you watch a movie or play a video game, but sadly don't have the space or the money to have a true home theater sound system. 
+Vous êtes peut-être comme moi et vous aimez être plongé dans l'ambiance lorsque vous regardez un film ou jouez à un jeu vidéo, mais malheureusement, vous n'avez pas l'espace ni l'argent pour avoir un véritable système home cinéma.
 
-Still, you want to have the "surround experience". The obvious solution is to use a virtual surround software solution like what Dolby or Apple AirPods have. 
+Pourtant, vous voulez avoir une expérience "d'immersion totale". La solution évidente est d'utiliser une solution logicielle de surround virtuel, comme ce que propose Dolby ou les AirPods.
 
-One problem though, obviously you don't use windows and heaven if you did Dolby solution is quite expensive and the AirPods Spatial Audio work only with Apple devices content supporting it.
+Un problème se pose cependant, évidemment vous n'utilisez pas Windows et même si vous le faisiez, la solution Dolby est assez coûteuse, et la fonctionnalité Spatial Audio des AirPods ne fonctionne qu'avec les appareil Apple sur du contenu spécifique.
 
-But don't worry, one solution exist !! Thanks to Pipewire you can easily create something similar or even better if you really want to !
+Mais ne vous inquiétez pas, une solution existe ! Grâce à Pipewire, vous pouvez facilement créer quelque chose de similaire, voire même meilleurs si vous avait du temps a perdre !
 
 ## How Spatial Audio work
 
@@ -27,7 +27,6 @@ First, before starting to configure Pipewire, let's dive a little on how this "S
 
 The goal of spatial audio is to emulate and recreate the feeling that a sound come from a certain direction while having only two audio channels to play with. And thus recreate a something like a 7.1 surround system or more if you really want to.
 
-<!-- ![](Pasted%20image%2020230620010611.png) -->
 {{< image src="surround-setup.png" alt="7.1 Surround Setup" position="center" style="border-radius: 8px;" >}}
 
 The thing is that you only have two ears, so how is it that you can know where a sound come from ? 
