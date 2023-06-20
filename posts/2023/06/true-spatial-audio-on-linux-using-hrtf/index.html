@@ -1,0 +1,310 @@
+<!doctype html><html lang=en>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="ie=edge">
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=author content="Samuel Rodrigues ">
+<meta name=description content="Maybe you are like me, and you like being immersed when you watch a movie or play a video game, but sadly don&amp;rsquo;t have the space or the money to have a true home theater sound system.
+Still, you want to have the &amp;ldquo;surround experience&amp;rdquo;. The obvious solution is to use a virtual surround software solution like what Dolby or Apple AirPods have.
+One problem though, obviously you don&amp;rsquo;t use windows and heaven if you did Dolby solution is quite expensive and the AirPods Spatial Audio work only with Apple devices content supporting it.">
+<meta name=keywords content=",linux,spatial-audio,pipewire,hrtf,surround,audio">
+<meta name=robots content="noodp">
+<meta name=theme-color content>
+<link rel=canonical href=https://obito.fr/posts/2023/06/true-spatial-audio-on-linux-using-hrtf/>
+<title>
+True Spatial Audio on Linux using HRTF :: Samuel Rodrigues — Portofolio, Thoughts, stories and ideas from my everyday life.
+</title>
+<link href=https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css rel=stylesheet type=text/css>
+<link rel=stylesheet href=https://obito.fr/main.9889ad963bea92f1dc07a83d7b8be2f8db6417517bc8a64c2a95946af412e9a2.css>
+<link rel=apple-touch-icon sizes=180x180 href=https://obito.fr/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=https://obito.fr/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=https://obito.fr/favicon-16x16.png>
+<link rel=manifest href=https://obito.fr/site.webmanifest>
+<link rel=mask-icon href=https://obito.fr/safari-pinned-tab.svg color>
+<link rel="shortcut icon" href=https://obito.fr/favicon.ico>
+<meta name=msapplication-TileColor content>
+<meta itemprop=name content="True Spatial Audio on Linux using HRTF">
+<meta itemprop=description content="Maybe you are like me, and you like being immersed when you watch a movie or play a video game, but sadly don&rsquo;t have the space or the money to have a true home theater sound system.
+Still, you want to have the &ldquo;surround experience&rdquo;. The obvious solution is to use a virtual surround software solution like what Dolby or Apple AirPods have.
+One problem though, obviously you don&rsquo;t use windows and heaven if you did Dolby solution is quite expensive and the AirPods Spatial Audio work only with Apple devices content supporting it."><meta itemprop=datePublished content="2023-06-20T01:15:00+01:00">
+<meta itemprop=dateModified content="2023-06-20T01:15:00+01:00">
+<meta itemprop=wordCount content="1553"><meta itemprop=image content="https://obito.fr/">
+<meta itemprop=keywords content="linux,spatial-audio,pipewire,hrtf,surround,audio,">
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://obito.fr/">
+<meta name=twitter:title content="True Spatial Audio on Linux using HRTF">
+<meta name=twitter:description content="Maybe you are like me, and you like being immersed when you watch a movie or play a video game, but sadly don&rsquo;t have the space or the money to have a true home theater sound system.
+Still, you want to have the &ldquo;surround experience&rdquo;. The obvious solution is to use a virtual surround software solution like what Dolby or Apple AirPods have.
+One problem though, obviously you don&rsquo;t use windows and heaven if you did Dolby solution is quite expensive and the AirPods Spatial Audio work only with Apple devices content supporting it.">
+<meta property="og:title" content="True Spatial Audio on Linux using HRTF">
+<meta property="og:description" content="Maybe you are like me, and you like being immersed when you watch a movie or play a video game, but sadly don&rsquo;t have the space or the money to have a true home theater sound system.
+Still, you want to have the &ldquo;surround experience&rdquo;. The obvious solution is to use a virtual surround software solution like what Dolby or Apple AirPods have.
+One problem though, obviously you don&rsquo;t use windows and heaven if you did Dolby solution is quite expensive and the AirPods Spatial Audio work only with Apple devices content supporting it.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://obito.fr/posts/2023/06/true-spatial-audio-on-linux-using-hrtf/"><meta property="og:image" content="https://obito.fr/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2023-06-20T01:15:00+01:00">
+<meta property="article:modified_time" content="2023-06-20T01:15:00+01:00"><meta property="og:site_name" content="Samuel Rodrigues">
+<meta property="article:published_time" content="2023-06-20 01:15:00 +0100 +0100">
+</head>
+<body>
+<div class=container>
+<header class=header>
+<span class=header__inner>
+<a href=https://obito.fr/ style=text-decoration:none>
+<div class=logo>
+<span class=logo__mark>></span>
+<span class=logo__text>Obito1903</span>
+<span class=logo__cursor>
+</span>
+</div>
+</a>
+<span class=header__right>
+<nav class=menu>
+<ul class=menu__inner><li><a href=https://obito.fr/about/>About</a></li><li><a href=https://obito.fr/posts>Blog</a></li><li><a href=https://obito.fr/projects>Projects</a></li>
+<div class=submenu>
+<li class=dropdown>
+<a href=javascript:void(0) class=dropbtn>en</a>
+<div class=dropdown-content>
+</div>
+</li>
+</div>
+</ul>
+</nav>
+<span class=menu-trigger><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+</span>
+</span>
+</span>
+</header>
+<div class=content>
+<main class=post>
+<div class=post-info>
+<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+8 minutes
+</p>
+</div>
+<article>
+<h1 class=post-title>
+<a href=https://obito.fr/posts/2023/06/true-spatial-audio-on-linux-using-hrtf/>True Spatial Audio on Linux using HRTF</a>
+</h1>
+<hr>
+<aside id=toc>
+<div class=toc-title>Table of Contents</div>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#how-spatial-audio-work>How Spatial Audio work</a></li>
+<li><a href=#finding-your-hrtf>Finding your HRTF</a></li>
+<li><a href=#applying-our-hrtf>Applying our HRTF</a></li>
+</ul>
+</nav>
+</aside>
+<hr>
+<div class=post-content>
+<p>Maybe you are like me, and you like being immersed when you watch a movie or play a video game, but sadly don&rsquo;t have the space or the money to have a true home theater sound system.</p>
+<p>Still, you want to have the &ldquo;surround experience&rdquo;. The obvious solution is to use a virtual surround software solution like what Dolby or Apple AirPods have.</p>
+<p>One problem though, obviously you don&rsquo;t use windows and heaven if you did Dolby solution is quite expensive and the AirPods Spatial Audio work only with Apple devices content supporting it.</p>
+<p>But don&rsquo;t worry, one solution exist !! Thanks to Pipewire you can easily create something similar or even better if you really want to !</p>
+<h2 id=how-spatial-audio-work>How Spatial Audio work</h2>
+<p>First, before starting to configure Pipewire, let&rsquo;s dive a little on how this &ldquo;Spatial Audio&rdquo; thing work.</p>
+<p>The goal of spatial audio is to emulate and recreate the feeling that a sound come from a certain direction while having only two audio channels to play with. And thus recreate a something like a 7.1 surround system or more if you really want to.</p>
+<img src=surround-setup.png alt="7.1 Surround Setup" class=center style=border-radius:8px>
+<p>The thing is that you only have two ears, so how is it that you can know where a sound come from ?</p>
+<p>Well, to put it simply, your brain is very clever. It uses a ton of information like the delay that a sound took to reach both of your ears or the way sound bounce around your ear canal. But the thing is that your brain is also tuned to your head and ear shape.</p>
+<p>This means that theoretically, if you send the right sound to your ears, you can make your brain believe that it come from a totally different direction. And guess what, people have come up with a way to do exactly that !</p>
+<p>This method involve something called a <a href="https://en.wikipedia.org/wiki/Head-related_transfer_function#:~:text=A%20head%2Drelated%20transfer%20function,from%20a%20point%20in%20space.">Head-related Transfer Function</a> or HRTF for short. According to Wikipedia, an HRTF is a response that characterizes how an ear receives a sound from a point in space.</p>
+<p>From this HRTF, you can then create a filter that will make the sound appear as it came from a specific point in space. Various formats exist to store this information, the most common ones being sofa from <a href=https://www.sofaconventions.org/mediawiki/index.php/SOFA_(Spatially_Oriented_Format_for_Acoustics)>sofaconventions</a> and as a simple impulse response with backed-in directionality.</p>
+<h2 id=finding-your-hrtf>Finding your HRTF</h2>
+<p>Now that we know how we can recreate spatial audio, we need to find ourselves a proper HRTF. There are three ways you can go about it :</p>
+<ol>
+<li>Grab a generic HRTF impulse response from the web (something like the Dobly Atmos For Headphones one)</li>
+<li>Try a bunch a HRTF created by research institutes a keep the one you prefer, you can find a list of them <a href=https://www.sofaconventions.org/mediawiki/index.php/Files>here</a></li>
+<li>Create your own, this can be a bit time-consuming and costly if you want to do it properly.</li>
+</ol>
+<p>Obviously, you&rsquo;ll get the best result with a custom HRTF, but this probably too much trouble than it&rsquo;s worth to create one. So I recommend simply using a generic one like the Dolby Atmos one.</p>
+<p>You can find some <a href=https://airtable.com/shruimhjdSakUPg2m/tbloLjoZKWJDnLtTc>here</a>. Download the HeSuVi wav file of your choice, just make sure it&rsquo;s a file intended for 7.1 use.</p>
+<h2 id=applying-our-hrtf>Applying our HRTF</h2>
+<p>And now for the hard part ! Well, in reality, it&rsquo;s pretty simple. You just need to create a new filter chain inside your Pipewire using a convolver filter.</p>
+<p>If you don&rsquo;t already have one, create a folder <code>pipewire</code> inside <code>~/.config</code></p>
+<p>Inside it, move your HRTF impulse response file and create a folder called <code>pipewire.conf.d</code></p>
+<p>This folder allows us to only define part of the Pipewire configuration without having to copy the whole default config</p>
+<p>Now create a file called <code>99-spatial-audio.conf</code> inside <code>pipewire.conf.d</code> and start by defining a filter-chain</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nginx data-lang=nginx><span style=color:#66d9ef>context.modules</span> = <span style=color:#e6db74>[</span>
+    { <span style=color:#f92672>name</span> = <span style=color:#e6db74>libpipewire-module-filter-chain</span>
+        <span style=color:#e6db74>args</span> = {
+            <span style=color:#f92672>node.description</span> = <span style=color:#e6db74>&#34;Spatial</span> <span style=color:#e6db74>Audio</span> <span style=color:#e6db74>Sink&#34;</span>
+            <span style=color:#e6db74>media.name</span>       = <span style=color:#e6db74>&#34;Spatial</span> <span style=color:#e6db74>Audio</span> <span style=color:#e6db74>Sink&#34;</span>
+            <span style=color:#e6db74>filter.graph</span> = {
+		        <span style=color:#75715e># ... Filter config
+</span><span style=color:#75715e></span>            }
+            <span style=color:#f92672>capture.props</span> = {
+                <span style=color:#f92672>node.name</span>      = <span style=color:#e6db74>&#34;effect_input.spatial-audio&#34;</span>
+                <span style=color:#e6db74>media.class</span>    = <span style=color:#e6db74>Audio/Sink</span>
+                <span style=color:#e6db74>audio.channels</span> = <span style=color:#ae81ff>8</span>
+                <span style=color:#e6db74>audio.position</span> = <span style=color:#e6db74>[</span> <span style=color:#e6db74>FL</span> <span style=color:#e6db74>FR</span> <span style=color:#e6db74>FC</span> <span style=color:#e6db74>LFE</span> <span style=color:#e6db74>RL</span> <span style=color:#e6db74>RR</span> <span style=color:#e6db74>SL</span> <span style=color:#e6db74>SR</span> <span style=color:#e6db74>]</span>
+            <span style=color:#960050;background-color:#1e0010>}</span>
+            <span style=color:#e6db74>playback.props</span> = {
+                <span style=color:#f92672>node.name</span>      = <span style=color:#e6db74>&#34;effect_output.spatial-audio&#34;</span>
+                <span style=color:#e6db74>node.passive</span>   = <span style=color:#e6db74>true</span>
+                <span style=color:#e6db74>audio.channels</span> = <span style=color:#ae81ff>2</span>
+                <span style=color:#e6db74>audio.position</span> = <span style=color:#e6db74>[</span> <span style=color:#e6db74>FL</span> <span style=color:#e6db74>FR</span> <span style=color:#e6db74>]</span>
+            <span style=color:#960050;background-color:#1e0010>}</span>
+        <span style=color:#960050;background-color:#1e0010>}</span>
+    <span style=color:#960050;background-color:#1e0010>}</span>
+<span style=color:#e6db74>]</span>
+</code></pre></div><p>With this we have a basic filter-chain that will take as input 8 channels, corresponding to a 7.1 surround setup, and will output two channels for our headset or speakers</p>
+<p>Now let&rsquo;s configure this filter chain :</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nginx data-lang=nginx><span style=color:#66d9ef>context.modules</span> = <span style=color:#e6db74>[</span>
+    { <span style=color:#f92672>name</span> = <span style=color:#e6db74>libpipewire-module-filter-chain</span>
+        <span style=color:#e6db74>args</span> = {
+            <span style=color:#f92672>node.description</span> = <span style=color:#e6db74>&#34;Virtual</span> <span style=color:#e6db74>Surround</span> <span style=color:#e6db74>Sink&#34;</span>
+            <span style=color:#e6db74>media.name</span>       = <span style=color:#e6db74>&#34;Virtual</span> <span style=color:#e6db74>Surround</span> <span style=color:#e6db74>Sink&#34;</span>
+            <span style=color:#e6db74>filter.graph</span> = {
+                <span style=color:#f92672>nodes</span> = <span style=color:#e6db74>[</span>
+                    <span style=color:#75715e># duplicate inputs
+</span><span style=color:#75715e></span>                    { <span style=color:#f92672>type</span> = <span style=color:#e6db74>builtin</span> <span style=color:#e6db74>label</span> = <span style=color:#e6db74>copy</span> <span style=color:#e6db74>name</span> = <span style=color:#e6db74>copyFL</span>  <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>type</span> = <span style=color:#e6db74>builtin</span> <span style=color:#e6db74>label</span> = <span style=color:#e6db74>copy</span> <span style=color:#e6db74>name</span> = <span style=color:#e6db74>copyFR</span>  <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>type</span> = <span style=color:#e6db74>builtin</span> <span style=color:#e6db74>label</span> = <span style=color:#e6db74>copy</span> <span style=color:#e6db74>name</span> = <span style=color:#e6db74>copyFC</span>  <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>type</span> = <span style=color:#e6db74>builtin</span> <span style=color:#e6db74>label</span> = <span style=color:#e6db74>copy</span> <span style=color:#e6db74>name</span> = <span style=color:#e6db74>copyRL</span>  <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>type</span> = <span style=color:#e6db74>builtin</span> <span style=color:#e6db74>label</span> = <span style=color:#e6db74>copy</span> <span style=color:#e6db74>name</span> = <span style=color:#e6db74>copyRR</span>  <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>type</span> = <span style=color:#e6db74>builtin</span> <span style=color:#e6db74>label</span> = <span style=color:#e6db74>copy</span> <span style=color:#e6db74>name</span> = <span style=color:#e6db74>copySL</span>  <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>type</span> = <span style=color:#e6db74>builtin</span> <span style=color:#e6db74>label</span> = <span style=color:#e6db74>copy</span> <span style=color:#e6db74>name</span> = <span style=color:#e6db74>copySR</span>  <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>type</span> = <span style=color:#e6db74>builtin</span> <span style=color:#e6db74>label</span> = <span style=color:#e6db74>copy</span> <span style=color:#e6db74>name</span> = <span style=color:#e6db74>copyLFE</span> <span style=color:#960050;background-color:#1e0010>}</span>
+
+                    <span style=color:#75715e># apply hrtf - HeSuVi 14-channel WAV
+</span><span style=color:#75715e></span>                    { <span style=color:#f92672>type</span> = <span style=color:#e6db74>builtin</span> <span style=color:#e6db74>label</span> = <span style=color:#e6db74>convolver</span> <span style=color:#e6db74>name</span> = <span style=color:#e6db74>convFL_L</span> <span style=color:#e6db74>config</span> = { <span style=color:#f92672>filename</span> = <span style=color:#e6db74>&#34;/path/to/hrtf.wav&#34;</span> <span style=color:#e6db74>channel</span> =  <span style=color:#ae81ff>0</span> <span style=color:#960050;background-color:#1e0010>}</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>type</span> = <span style=color:#e6db74>builtin</span> <span style=color:#e6db74>label</span> = <span style=color:#e6db74>convolver</span> <span style=color:#e6db74>name</span> = <span style=color:#e6db74>convFL_R</span> <span style=color:#e6db74>config</span> = { <span style=color:#f92672>filename</span> = <span style=color:#e6db74>&#34;/path/to/hrtf.wav&#34;</span> <span style=color:#e6db74>channel</span> =  <span style=color:#ae81ff>1</span> <span style=color:#960050;background-color:#1e0010>}</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>type</span> = <span style=color:#e6db74>builtin</span> <span style=color:#e6db74>label</span> = <span style=color:#e6db74>convolver</span> <span style=color:#e6db74>name</span> = <span style=color:#e6db74>convSL_L</span> <span style=color:#e6db74>config</span> = { <span style=color:#f92672>filename</span> = <span style=color:#e6db74>&#34;/path/to/hrtf.wav&#34;</span> <span style=color:#e6db74>channel</span> =  <span style=color:#ae81ff>2</span> <span style=color:#960050;background-color:#1e0010>}</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>type</span> = <span style=color:#e6db74>builtin</span> <span style=color:#e6db74>label</span> = <span style=color:#e6db74>convolver</span> <span style=color:#e6db74>name</span> = <span style=color:#e6db74>convSL_R</span> <span style=color:#e6db74>config</span> = { <span style=color:#f92672>filename</span> = <span style=color:#e6db74>&#34;/path/to/hrtf.wav&#34;</span> <span style=color:#e6db74>channel</span> =  <span style=color:#ae81ff>3</span> <span style=color:#960050;background-color:#1e0010>}</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>type</span> = <span style=color:#e6db74>builtin</span> <span style=color:#e6db74>label</span> = <span style=color:#e6db74>convolver</span> <span style=color:#e6db74>name</span> = <span style=color:#e6db74>convRL_L</span> <span style=color:#e6db74>config</span> = { <span style=color:#f92672>filename</span> = <span style=color:#e6db74>&#34;/path/to/hrtf.wav&#34;</span> <span style=color:#e6db74>channel</span> =  <span style=color:#ae81ff>4</span> <span style=color:#960050;background-color:#1e0010>}</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>type</span> = <span style=color:#e6db74>builtin</span> <span style=color:#e6db74>label</span> = <span style=color:#e6db74>convolver</span> <span style=color:#e6db74>name</span> = <span style=color:#e6db74>convRL_R</span> <span style=color:#e6db74>config</span> = { <span style=color:#f92672>filename</span> = <span style=color:#e6db74>&#34;/path/to/hrtf.wav&#34;</span> <span style=color:#e6db74>channel</span> =  <span style=color:#ae81ff>5</span> <span style=color:#960050;background-color:#1e0010>}</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>type</span> = <span style=color:#e6db74>builtin</span> <span style=color:#e6db74>label</span> = <span style=color:#e6db74>convolver</span> <span style=color:#e6db74>name</span> = <span style=color:#e6db74>convFC_L</span> <span style=color:#e6db74>config</span> = { <span style=color:#f92672>filename</span> = <span style=color:#e6db74>&#34;/path/to/hrtf.wav&#34;</span> <span style=color:#e6db74>channel</span> =  <span style=color:#ae81ff>6</span> <span style=color:#960050;background-color:#1e0010>}</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>type</span> = <span style=color:#e6db74>builtin</span> <span style=color:#e6db74>label</span> = <span style=color:#e6db74>convolver</span> <span style=color:#e6db74>name</span> = <span style=color:#e6db74>convFR_R</span> <span style=color:#e6db74>config</span> = { <span style=color:#f92672>filename</span> = <span style=color:#e6db74>&#34;/path/to/hrtf.wav&#34;</span> <span style=color:#e6db74>channel</span> =  <span style=color:#ae81ff>7</span> <span style=color:#960050;background-color:#1e0010>}</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>type</span> = <span style=color:#e6db74>builtin</span> <span style=color:#e6db74>label</span> = <span style=color:#e6db74>convolver</span> <span style=color:#e6db74>name</span> = <span style=color:#e6db74>convFR_L</span> <span style=color:#e6db74>config</span> = { <span style=color:#f92672>filename</span> = <span style=color:#e6db74>&#34;/path/to/hrtf.wav&#34;</span> <span style=color:#e6db74>channel</span> =  <span style=color:#ae81ff>8</span> <span style=color:#960050;background-color:#1e0010>}</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>type</span> = <span style=color:#e6db74>builtin</span> <span style=color:#e6db74>label</span> = <span style=color:#e6db74>convolver</span> <span style=color:#e6db74>name</span> = <span style=color:#e6db74>convSR_R</span> <span style=color:#e6db74>config</span> = { <span style=color:#f92672>filename</span> = <span style=color:#e6db74>&#34;/path/to/hrtf.wav&#34;</span> <span style=color:#e6db74>channel</span> =  <span style=color:#ae81ff>9</span> <span style=color:#960050;background-color:#1e0010>}</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>type</span> = <span style=color:#e6db74>builtin</span> <span style=color:#e6db74>label</span> = <span style=color:#e6db74>convolver</span> <span style=color:#e6db74>name</span> = <span style=color:#e6db74>convSR_L</span> <span style=color:#e6db74>config</span> = { <span style=color:#f92672>filename</span> = <span style=color:#e6db74>&#34;/path/to/hrtf.wav&#34;</span> <span style=color:#e6db74>channel</span> = <span style=color:#ae81ff>10</span> <span style=color:#960050;background-color:#1e0010>}</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>type</span> = <span style=color:#e6db74>builtin</span> <span style=color:#e6db74>label</span> = <span style=color:#e6db74>convolver</span> <span style=color:#e6db74>name</span> = <span style=color:#e6db74>convRR_R</span> <span style=color:#e6db74>config</span> = { <span style=color:#f92672>filename</span> = <span style=color:#e6db74>&#34;/path/to/hrtf.wav&#34;</span> <span style=color:#e6db74>channel</span> = <span style=color:#ae81ff>11</span> <span style=color:#960050;background-color:#1e0010>}</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>type</span> = <span style=color:#e6db74>builtin</span> <span style=color:#e6db74>label</span> = <span style=color:#e6db74>convolver</span> <span style=color:#e6db74>name</span> = <span style=color:#e6db74>convRR_L</span> <span style=color:#e6db74>config</span> = { <span style=color:#f92672>filename</span> = <span style=color:#e6db74>&#34;/path/to/hrtf.wav&#34;</span> <span style=color:#e6db74>channel</span> = <span style=color:#ae81ff>12</span> <span style=color:#960050;background-color:#1e0010>}</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>type</span> = <span style=color:#e6db74>builtin</span> <span style=color:#e6db74>label</span> = <span style=color:#e6db74>convolver</span> <span style=color:#e6db74>name</span> = <span style=color:#e6db74>convFC_R</span> <span style=color:#e6db74>config</span> = { <span style=color:#f92672>filename</span> = <span style=color:#e6db74>&#34;/path/to/hrtf.wav&#34;</span> <span style=color:#e6db74>channel</span> = <span style=color:#ae81ff>13</span> <span style=color:#960050;background-color:#1e0010>}</span> <span style=color:#960050;background-color:#1e0010>}</span>
+
+                    <span style=color:#75715e># treat LFE as FC
+</span><span style=color:#75715e></span>                    { <span style=color:#f92672>type</span> = <span style=color:#e6db74>builtin</span> <span style=color:#e6db74>label</span> = <span style=color:#e6db74>convolver</span> <span style=color:#e6db74>name</span> = <span style=color:#e6db74>convLFE_L</span> <span style=color:#e6db74>config</span> = { <span style=color:#f92672>filename</span> = <span style=color:#e6db74>&#34;/path/to/hrtf.wav&#34;</span> <span style=color:#e6db74>channel</span> =  <span style=color:#ae81ff>6</span> <span style=color:#960050;background-color:#1e0010>}</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>type</span> = <span style=color:#e6db74>builtin</span> <span style=color:#e6db74>label</span> = <span style=color:#e6db74>convolver</span> <span style=color:#e6db74>name</span> = <span style=color:#e6db74>convLFE_R</span> <span style=color:#e6db74>config</span> = { <span style=color:#f92672>filename</span> = <span style=color:#e6db74>&#34;/path/to/hrtf.wav&#34;</span> <span style=color:#e6db74>channel</span> = <span style=color:#ae81ff>13</span> <span style=color:#960050;background-color:#1e0010>}</span> <span style=color:#960050;background-color:#1e0010>}</span>
+
+                    <span style=color:#75715e># stereo output
+</span><span style=color:#75715e></span>                    { <span style=color:#f92672>type</span> = <span style=color:#e6db74>builtin</span> <span style=color:#e6db74>label</span> = <span style=color:#e6db74>mixer</span> <span style=color:#e6db74>name</span> = <span style=color:#e6db74>mixL</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>type</span> = <span style=color:#e6db74>builtin</span> <span style=color:#e6db74>label</span> = <span style=color:#e6db74>mixer</span> <span style=color:#e6db74>name</span> = <span style=color:#e6db74>mixR</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                <span style=color:#e6db74>]</span>
+                <span style=color:#e6db74>links</span> = <span style=color:#e6db74>[</span>
+                    <span style=color:#75715e># input to convolver 
+</span><span style=color:#75715e></span>                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;copyFL:Out&#34;</span>  <span style=color:#e6db74>input=&#34;convFL_L:In&#34;</span>  <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;copyFL:Out&#34;</span>  <span style=color:#e6db74>input=&#34;convFL_R:In&#34;</span>  <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;copySL:Out&#34;</span>  <span style=color:#e6db74>input=&#34;convSL_L:In&#34;</span>  <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;copySL:Out&#34;</span>  <span style=color:#e6db74>input=&#34;convSL_R:In&#34;</span>  <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;copyRL:Out&#34;</span>  <span style=color:#e6db74>input=&#34;convRL_L:In&#34;</span>  <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;copyRL:Out&#34;</span>  <span style=color:#e6db74>input=&#34;convRL_R:In&#34;</span>  <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;copyFC:Out&#34;</span>  <span style=color:#e6db74>input=&#34;convFC_L:In&#34;</span>  <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;copyFR:Out&#34;</span>  <span style=color:#e6db74>input=&#34;convFR_R:In&#34;</span>  <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;copyFR:Out&#34;</span>  <span style=color:#e6db74>input=&#34;convFR_L:In&#34;</span>  <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;copySR:Out&#34;</span>  <span style=color:#e6db74>input=&#34;convSR_R:In&#34;</span>  <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;copySR:Out&#34;</span>  <span style=color:#e6db74>input=&#34;convSR_L:In&#34;</span>  <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;copyRR:Out&#34;</span>  <span style=color:#e6db74>input=&#34;convRR_R:In&#34;</span>  <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;copyRR:Out&#34;</span>  <span style=color:#e6db74>input=&#34;convRR_L:In&#34;</span>  <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;copyFC:Out&#34;</span>  <span style=color:#e6db74>input=&#34;convFC_R:In&#34;</span>  <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;copyLFE:Out&#34;</span> <span style=color:#e6db74>input=&#34;convLFE_L:In&#34;</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;copyLFE:Out&#34;</span> <span style=color:#e6db74>input=&#34;convLFE_R:In&#34;</span> <span style=color:#960050;background-color:#1e0010>}</span>
+
+                    <span style=color:#75715e># mix processed signal into stereo input
+</span><span style=color:#75715e></span>                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;convFL_L:Out&#34;</span>  <span style=color:#e6db74>input=&#34;mixL:In</span> <span style=color:#ae81ff>1</span><span style=color:#e6db74>&#34;</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;convFL_R:Out&#34;</span>  <span style=color:#e6db74>input=&#34;mixR:In</span> <span style=color:#ae81ff>1</span><span style=color:#e6db74>&#34;</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;convSL_L:Out&#34;</span>  <span style=color:#e6db74>input=&#34;mixL:In</span> <span style=color:#ae81ff>2</span><span style=color:#e6db74>&#34;</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;convSL_R:Out&#34;</span>  <span style=color:#e6db74>input=&#34;mixR:In</span> <span style=color:#ae81ff>2</span><span style=color:#e6db74>&#34;</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;convRL_L:Out&#34;</span>  <span style=color:#e6db74>input=&#34;mixL:In</span> <span style=color:#ae81ff>3</span><span style=color:#e6db74>&#34;</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;convRL_R:Out&#34;</span>  <span style=color:#e6db74>input=&#34;mixR:In</span> <span style=color:#ae81ff>3</span><span style=color:#e6db74>&#34;</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;convFC_L:Out&#34;</span>  <span style=color:#e6db74>input=&#34;mixL:In</span> <span style=color:#ae81ff>4</span><span style=color:#e6db74>&#34;</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;convFC_R:Out&#34;</span>  <span style=color:#e6db74>input=&#34;mixR:In</span> <span style=color:#ae81ff>4</span><span style=color:#e6db74>&#34;</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;convFR_R:Out&#34;</span>  <span style=color:#e6db74>input=&#34;mixR:In</span> <span style=color:#ae81ff>5</span><span style=color:#e6db74>&#34;</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;convFR_L:Out&#34;</span>  <span style=color:#e6db74>input=&#34;mixL:In</span> <span style=color:#ae81ff>5</span><span style=color:#e6db74>&#34;</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;convSR_R:Out&#34;</span>  <span style=color:#e6db74>input=&#34;mixR:In</span> <span style=color:#ae81ff>6</span><span style=color:#e6db74>&#34;</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;convSR_L:Out&#34;</span>  <span style=color:#e6db74>input=&#34;mixL:In</span> <span style=color:#ae81ff>6</span><span style=color:#e6db74>&#34;</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;convRR_R:Out&#34;</span>  <span style=color:#e6db74>input=&#34;mixR:In</span> <span style=color:#ae81ff>7</span><span style=color:#e6db74>&#34;</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;convRR_L:Out&#34;</span>  <span style=color:#e6db74>input=&#34;mixL:In</span> <span style=color:#ae81ff>7</span><span style=color:#e6db74>&#34;</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;convLFE_R:Out&#34;</span> <span style=color:#e6db74>input=&#34;mixR:In</span> <span style=color:#ae81ff>8</span><span style=color:#e6db74>&#34;</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                    { <span style=color:#f92672>output</span> = <span style=color:#e6db74>&#34;convLFE_L:Out&#34;</span> <span style=color:#e6db74>input=&#34;mixL:In</span> <span style=color:#ae81ff>8</span><span style=color:#e6db74>&#34;</span> <span style=color:#960050;background-color:#1e0010>}</span>
+                <span style=color:#e6db74>]</span>
+                <span style=color:#e6db74>inputs</span>  = <span style=color:#e6db74>[</span> <span style=color:#e6db74>&#34;copyFL:In&#34;</span> <span style=color:#e6db74>&#34;copyFR:In&#34;</span> <span style=color:#e6db74>&#34;copyFC:In&#34;</span> <span style=color:#e6db74>&#34;copyLFE:In&#34;</span> <span style=color:#e6db74>&#34;copyRL:In&#34;</span> <span style=color:#e6db74>&#34;copyRR:In&#34;,</span> <span style=color:#e6db74>&#34;copySL:In&#34;,</span> <span style=color:#e6db74>&#34;copySR:In&#34;</span> <span style=color:#e6db74>]</span>
+                <span style=color:#e6db74>outputs</span> = <span style=color:#e6db74>[</span> <span style=color:#e6db74>&#34;mixL:Out&#34;</span> <span style=color:#e6db74>&#34;mixR:Out&#34;</span> <span style=color:#e6db74>]</span>
+            <span style=color:#960050;background-color:#1e0010>}</span>
+            <span style=color:#e6db74>capture.props</span> = {
+                <span style=color:#f92672>node.name</span>      = <span style=color:#e6db74>&#34;effect_input.virtual-surround-7.1-hesuvi&#34;</span>
+                <span style=color:#e6db74>media.class</span>    = <span style=color:#e6db74>Audio/Sink</span>
+                <span style=color:#e6db74>audio.channels</span> = <span style=color:#ae81ff>8</span>
+                <span style=color:#e6db74>audio.position</span> = <span style=color:#e6db74>[</span> <span style=color:#e6db74>FL</span> <span style=color:#e6db74>FR</span> <span style=color:#e6db74>FC</span> <span style=color:#e6db74>LFE</span> <span style=color:#e6db74>RL</span> <span style=color:#e6db74>RR</span> <span style=color:#e6db74>SL</span> <span style=color:#e6db74>SR</span> <span style=color:#e6db74>]</span>
+            <span style=color:#960050;background-color:#1e0010>}</span>
+            <span style=color:#e6db74>playback.props</span> = {
+                <span style=color:#f92672>node.name</span>      = <span style=color:#e6db74>&#34;effect_output.virtual-surround-7.1-hesuvi&#34;</span>
+                <span style=color:#e6db74>node.passive</span>   = <span style=color:#e6db74>true</span>
+                <span style=color:#e6db74>audio.channels</span> = <span style=color:#ae81ff>2</span>
+                <span style=color:#e6db74>audio.position</span> = <span style=color:#e6db74>[</span> <span style=color:#e6db74>FL</span> <span style=color:#e6db74>FR</span> <span style=color:#e6db74>]</span>
+            <span style=color:#960050;background-color:#1e0010>}</span>
+        <span style=color:#960050;background-color:#1e0010>}</span>
+    <span style=color:#960050;background-color:#1e0010>}</span>
+<span style=color:#e6db74>]</span>
+</code></pre></div><p>Finally, don&rsquo;t forget to replace <code>/path/to/hrtf.wav</code> with the full path to your HRTF file.</p>
+<p>Now you can just restart Pipewire :</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>systemctl --user restart pipewire
+</code></pre></div>
+<img src=mixer.png alt="System audio mixer" class=center style=border-radius:8px>
+<p>And enjoy your favorite movies in glorious 7.1 surround !!</p>
+</div>
+</article>
+<hr>
+<div class=post-info>
+<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83.0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7" y2="7"/></svg>
+<span class=tag><a href=https://obito.fr/tags/linux/>linux</a></span>
+<span class=tag><a href=https://obito.fr/tags/spatial-audio/>spatial-audio</a></span>
+<span class=tag><a href=https://obito.fr/tags/pipewire/>pipewire</a></span>
+<span class=tag><a href=https://obito.fr/tags/hrtf/>hrtf</a></span>
+<span class=tag><a href=https://obito.fr/tags/surround/>surround</a></span>
+<span class=tag><a href=https://obito.fr/tags/audio/>audio</a></span>
+</p>
+<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6A2 2 0 004 4v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+1553 Words
+</p>
+<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+2023-06-20 00:15
+</p>
+</div>
+<div class=pagination>
+<div class=pagination__title>
+<span class=pagination__title-h>Read other posts</span>
+<hr>
+</div>
+<div class=pagination__buttons>
+<span class="button next">
+<a href=https://obito.fr/posts/2022/12/use-uuid-in-sqlite-database-with-rust-diesel.rs/>
+<span class=button__text>Use UUID in SQLite database with Rust + Diesel.rs</span>
+<span class=button__icon>→</span>
+</a>
+</span>
+</div>
+</div>
+</main>
+</div>
+<footer class=footer>
+<div class=footer__inner>
+<div class=footer__content>
+<span><a href=https://obito.fr/>Samuel Rodrigues</a></span>
+<span><a href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank rel=noopener>CC BY-NC 4.0</a></span>
+<span><a href=https://obito.fr/%20posts/index.xml target=_blank title=rss><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 019 9"/><path d="M4 4a16 16 0 0116 16"/><circle cx="5" cy="19" r="1"/></svg></a></span>
+</div>
+</div>
+<div class=footer__inner>
+<div class=footer__content>
+<span>Powered by <a href=http://gohugo.io>Hugo</a></span><span>Made with &#10084; by <a href=https://github.com/obito1903>Obito1903</a></span>
+</div>
+</div>
+</footer>
+</div>
+<script type=text/javascript src=https://obito.fr/bundle.min.617ca242d692c44a5b9d7d50bb64ecba7c8e8b8e27c8d46ada65aa90950dfd263fdf84787e4c894121633d2ca72c37cddc1defd82020753f6dfa812387c1139d.js integrity="sha512-YXyiQtaSxEpbnX1Qu2TsunyOi44nyNRq2mWqkJUN/SY/34R4fkyJQSFjPSynLDfN3B3v2CAgdT9t+oEjh8ETnQ=="></script>
+<script defer data-domain=obito.fr src=https://plausible.obito.fr/js/script.js></script>
+</body>
+</html>
