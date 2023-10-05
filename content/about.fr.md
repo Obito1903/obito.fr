@@ -72,6 +72,20 @@ Sass, Java JEE, Spring, Yew.rs...
 ## Expérience
 
 > <div>
+>   <span class="date">Sep 2023 - Sep 2024</span> <br>
+>   <div class="job-title-container" >
+>     <div>
+>     <span class="job-post">Alternant</span> |
+>     <span class="job-title">Forterro France</span>
+>     </div>
+>   </div>
+>   <hr />
+>   <p class="job-desc">
+> En charge du la mise en oeuvre d'une solution de tracing distribué pour les besoin interne et externe de l'entreprise.
+>   </p>
+> </div>
+
+> <div>
 >   <span class="date">Nov 2021 - Juillet 2022</span> <br>
 >   <div class="job-title-container" >
 >     <div>
@@ -105,6 +119,20 @@ Sass, Java JEE, Spring, Yew.rs...
 > </div>
 
 ## Formation
+
+> <div>
+>   <span class="date">2023 - 2024</span> <br>
+>   <div class="job-title-container" >
+>     <div>
+>     <span class="job-post">Ingénieur en Infrastructure du Cloud Computing</span> |
+>     <span class="job-title">CY-Tech</span>
+>     </div>
+>   </div>
+>   <hr />
+>   <p class="job-desc">
+>     Derniere année d'école d'ingénieur avec spécialisation en infrastructure du cloud computing.
+>   </p>
+> </div>
 
 > <div>
 >   <span class="date">Fevrier 2023 - Juin 2023</span> <br>

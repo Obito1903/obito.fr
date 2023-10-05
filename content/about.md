@@ -72,6 +72,20 @@ Sass, Java JEE, Spring, Yew.rs...
 ## Experiences
 
 > <div>
+>   <span class="date">Sep 2023 - Sep 2024</span> <br>
+>   <div class="job-title-container" >
+>     <div>
+>     <span class="job-post">Internship</span> |
+>     <span class="job-title">Forterro France</span>
+>     </div>
+>   </div>
+>   <hr />
+>   <p class="job-desc">
+> In charge of deploying a tracing and monitoring solution for the company internal needs.
+>   </p>
+> </div>
+
+> <div>
 >   <span class="date">Nov 2021 - Jun 2022</span> <br>
 >   <div class="job-title-container" >
 >     <div>
@@ -105,6 +119,19 @@ Sass, Java JEE, Spring, Yew.rs...
 
 
 ## Formations
+
+> <div>
+>   <span class="date">2023 - 2024</span> <br>
+>   <div class="job-title-container" >
+>     <div>
+>     <span class="job-post">Cloud Engineer</span> |
+>     <span class="job-title">CY-Tech</span>
+>     </div>
+>   </div>
+>   <hr />
+>   <p class="job-desc">
+>   </p>
+> </div>
 
 > <div>
 >   <span class="date">Feb 2023 - Jun 2023</span> <br>
