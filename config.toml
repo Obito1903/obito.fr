@@ -2,9 +2,10 @@ baseURL = 'https://obito.fr/'
 languageCode = 'en-us'
 title = 'Samuel Rodrigues - obito1903'
 theme = 'hello-friend-ng'
-paginate     = 10
 rssLimit  = 10  # Maximum number of items in the RSS feed.
 
+[pagination]
+  pagerSize = 10
 
 buildDrafts  = false
 buildFuture  = false
@@ -23,11 +24,9 @@ disableHugoGeneratorInject = false
 [permalinks]
   posts = "/posts/:year/:month/:title/"
 
-[author]
-  name = "Samuel Rodrigues"
-
-
 [params]
+  [author]
+    name = "Samuel Rodrigues"
   dateform        = "Jan 2, 2006"
   dateformShort   = "Jan 2"
   dateformNum     = "2006-01-02"
